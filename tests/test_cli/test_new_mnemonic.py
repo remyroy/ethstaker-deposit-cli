@@ -370,8 +370,9 @@ async def test_script_bls_withdrawal() -> None:
 
         assert len(seed_phrase) > 0
 
-        proc.stdin.close()
         await proc.communicate()
+        proc.stdin.close()
+        await proc.stdout.read()
         await proc.wait()
 
         # Check files
@@ -455,8 +456,9 @@ async def test_script_abbreviated_mnemonic() -> None:
 
         assert len(seed_phrase) > 0
 
-        proc.stdin.close()
         await proc.communicate()
+        proc.stdin.close()
+        await proc.stdout.read()
         await proc.wait()
 
         # Check files
