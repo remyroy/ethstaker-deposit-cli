@@ -368,6 +368,7 @@ async def test_script_bls_withdrawal() -> None:
                 stdout, stderr = await proc.communicate(encoded_phrase + b'\n')
                 logger.debug(f'stdout: {stdout}, stderr: {stderr}')
                 input_prompt = False
+                await asyncio.sleep(5)
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
@@ -461,6 +462,7 @@ async def test_script_abbreviated_mnemonic() -> None:
                 stdout, stderr = await proc.communicate(encoded_phrase + b'\n')
                 logger.debug(f'stdout: {stdout}, stderr: {stderr}')
                 input_prompt = False
+                await asyncio.sleep(5)
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
