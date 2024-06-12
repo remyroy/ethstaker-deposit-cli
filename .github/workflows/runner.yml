@@ -26,7 +26,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements_test.txt
       - name: Run tests
-        run: pytest -k test_script_bls_withdrawal -o log_cli=true -o log_cli_level=DEBUG tests/test_cli/test_new_mnemonic.py
+        run: pytest -o log_cli=true -o log_cli_level=DEBUG tests/test_cli/test_new_mnemonic.py
       - name: Run type checker
         run: python -m mypy --config-file mypy.ini -p ethstaker_deposit
       - name: Run linter

@@ -21,6 +21,9 @@ from ethstaker_deposit.utils.constants import (
 from ethstaker_deposit.utils.intl import load_text
 from .helpers import get_permissions, get_uuid
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def test_new_mnemonic_bls_withdrawal(monkeypatch) -> None:
     # monkeypatch get_mnemonic
@@ -347,6 +350,7 @@ async def test_script_bls_withdrawal() -> None:
                                           'new_mnemonic.json')
         async for out in proc.stdout:
             output = out.decode('utf-8').rstrip()
+            logger.debug(f'Output: {output}')
             if output.startswith(load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')):
                 parsing = True
             elif output.startswith(load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')):
@@ -360,10 +364,14 @@ async def test_script_bls_withdrawal() -> None:
 
         assert len(seed_phrase) > 0
 
+        logger.debug('Before proc.communicate()')
         await proc.communicate()
+        logger.debug('After proc.communicate()')
         proc.stdin.close()
         await proc.stdout.read()
+        logger.debug('Before proc.wait()')
         await proc.wait()
+        logger.debug('After proc.wait()')
 
         # Check files
         validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
@@ -421,6 +429,7 @@ async def test_script_abbreviated_mnemonic() -> None:
                                           'new_mnemonic.json')
         async for out in proc.stdout:
             output = out.decode('utf-8').rstrip()
+            logger.debug(f'Output: {output}')
             if output.startswith(load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')):
                 parsing = True
             elif output.startswith(load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')):
@@ -435,10 +444,14 @@ async def test_script_abbreviated_mnemonic() -> None:
 
         assert len(seed_phrase) > 0
 
+        logger.debug('Before proc.communicate()')
         await proc.communicate()
+        logger.debug('After proc.communicate()')
         proc.stdin.close()
         await proc.stdout.read()
+        logger.debug('Before proc.wait()')
         await proc.wait()
+        logger.debug('After proc.wait()')
 
         # Check files
         validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
