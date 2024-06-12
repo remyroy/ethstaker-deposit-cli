@@ -362,6 +362,9 @@ async def test_script_bls_withdrawal() -> None:
                 encoded_phrase = seed_phrase.encode()
                 logger.debug(f'Writing: {seed_phrase}')
                 proc.stdin.write(encoded_phrase + b'\n')
+                logger.debug(f'eof after writing: {proc.stdout.at_eof()}')
+                await asyncio.sleep(5)
+                logger.debug(f'eof after sleeping: {proc.stdout.at_eof()}')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
@@ -453,6 +456,9 @@ async def test_script_abbreviated_mnemonic() -> None:
                 encoded_phrase = abbreviated_mnemonic.encode()
                 logger.debug(f'Writing: {abbreviated_mnemonic}')
                 proc.stdin.write(encoded_phrase + b'\n')
+                logger.debug(f'eof after writing: {proc.stdout.at_eof()}')
+                await asyncio.sleep(5)
+                logger.debug(f'eof after sleeping: {proc.stdout.at_eof()}')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
