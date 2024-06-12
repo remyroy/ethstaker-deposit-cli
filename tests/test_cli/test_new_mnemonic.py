@@ -362,7 +362,7 @@ async def test_script_bls_withdrawal() -> None:
             elif output.startswith(msg_mnemonic_retype_prompt):
                 encoded_phrase = seed_phrase.encode()
                 logger.debug(f'Writing: {seed_phrase}')
-                proc.stdin.write(encoded_phrase + b'\n')
+                proc.stdin.write(encoded_phrase)
                 logger.debug(f'eof after writing: {proc.stdout.at_eof()}')
                 await asyncio.sleep(5)
                 logger.debug(f'eof after sleeping: {proc.stdout.at_eof()}')
@@ -460,7 +460,7 @@ async def test_script_abbreviated_mnemonic() -> None:
                 abbreviated_mnemonic = ' '.join(abbreviate_words(seed_phrase.split(' ')))
                 encoded_phrase = abbreviated_mnemonic.encode()
                 logger.debug(f'Writing: {abbreviated_mnemonic}')
-                proc.stdin.write(encoded_phrase + b'\n')
+                proc.stdin.write(encoded_phrase)
                 logger.debug(f'eof after writing: {proc.stdout.at_eof()}')
                 await asyncio.sleep(5)
                 logger.debug(f'eof after sleeping: {proc.stdout.at_eof()}')
