@@ -354,6 +354,7 @@ async def test_script_bls_withdrawal() -> None:
         msg_mnemonic_retype_prompt = load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')
 
         async for out in proc.stdout:
+            logger.debug(f'eof: {proc.stdout.at_eof()}')
             output = out.decode('utf-8').rstrip()
             logger.debug(f'parsing: {parsing}, input_prompt: {input_prompt}, output: {output}')
             ready_write = output.startswith(':') and input_prompt
@@ -375,6 +376,8 @@ async def test_script_bls_withdrawal() -> None:
                     proc.stdin.write(b'\n')
                     parsing = False
 
+        logger.debug(f'eof: {proc.stdout.at_eof()}')
+
         assert len(seed_phrase) > 0
 
         logger.debug('Before proc.communicate()')
@@ -385,6 +388,8 @@ async def test_script_bls_withdrawal() -> None:
         logger.debug('Before proc.wait()')
         await proc.wait()
         logger.debug('After proc.wait()')
+
+        logger.debug(f'eof: {proc.stdout.at_eof()}')
 
         # Check files
         validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
@@ -446,6 +451,7 @@ async def test_script_abbreviated_mnemonic() -> None:
         msg_mnemonic_retype_prompt = load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')
 
         async for out in proc.stdout:
+            logger.debug(f'eof: {proc.stdout.at_eof()}')
             output = out.decode('utf-8').rstrip()
             logger.debug(f'parsing: {parsing}, input_prompt: {input_prompt}, output: {output}')
             ready_write = output.startswith(':') and input_prompt
@@ -467,7 +473,8 @@ async def test_script_abbreviated_mnemonic() -> None:
                     logger.debug('Writing new line')
                     proc.stdin.write(b'\n')
                     parsing = False
-                    
+        
+        logger.debug(f'eof: {proc.stdout.at_eof()}')
 
         assert len(seed_phrase) > 0
 
@@ -479,6 +486,8 @@ async def test_script_abbreviated_mnemonic() -> None:
         logger.debug('Before proc.wait()')
         await proc.wait()
         logger.debug('After proc.wait()')
+
+        logger.debug(f'eof: {proc.stdout.at_eof()}')
 
         # Check files
         validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
