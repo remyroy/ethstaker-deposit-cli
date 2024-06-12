@@ -361,15 +361,17 @@ async def test_script_bls_withdrawal() -> None:
             if output.startswith(msg_mnemonic_presentation):
                 parsing = True
             elif output.startswith(msg_mnemonic_retype_prompt):
-                parsing = False
+                encoded_phrase = seed_phrase.encode()
+                logger.debug(f'Writing: {seed_phrase}')
+                proc.stdin.write(encoded_phrase)
+                logger.debug('Writing new line')
+                proc.stdin.write(b'\n')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
-                    encoded_phrase = seed_phrase.encode()
-                    logger.debug(f'Writing: {seed_phrase}')
-                    proc.stdin.write(encoded_phrase)
                     logger.debug('Writing new line')
                     proc.stdin.write(b'\n')
+                    parsing = False
 
         assert len(seed_phrase) > 0
 
@@ -449,16 +451,19 @@ async def test_script_abbreviated_mnemonic() -> None:
             if output.startswith(msg_mnemonic_presentation):
                 parsing = True
             elif output.startswith(msg_mnemonic_retype_prompt):
-                parsing = False
+                abbreviated_mnemonic = ' '.join(abbreviate_words(seed_phrase.split(' ')))
+                encoded_phrase = abbreviated_mnemonic.encode()
+                logger.debug(f'Writing: {abbreviated_mnemonic}')
+                proc.stdin.write(encoded_phrase)
+                logger.debug('Writing new line')
+                proc.stdin.write(b'\n')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
-                    abbreviated_mnemonic = ' '.join(abbreviate_words(seed_phrase.split(' ')))
-                    encoded_phrase = abbreviated_mnemonic.encode()
-                    logger.debug(f'Writing: {abbreviated_mnemonic}')
-                    proc.stdin.write(encoded_phrase)
                     logger.debug('Writing new line')
                     proc.stdin.write(b'\n')
+                    parsing = False
+                    
 
         assert len(seed_phrase) > 0
 
