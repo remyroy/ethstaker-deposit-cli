@@ -1,12 +1,12 @@
-import os
 import socket
 import sys
+
+from tempfile import TemporaryDirectory
 
 import click
 from click.testing import CliRunner
 
 from ethstaker_deposit.deposit import check_connectivity, check_python_version, cli
-from tests.test_cli.helpers import clean_key_folder
 
 
 def test_should_notify_user_and_exit_if_invalid_python_version(monkeypatch) -> None:
@@ -91,28 +91,24 @@ def test_should_check_connectivity_by_default(monkeypatch) -> None:
 
     monkeypatch.setattr(socket, 'getaddrinfo', _mock_socket_getaddrinfo)
 
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_key_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
-    runner = CliRunner()
-    inputs = [
-        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-        '0', '0', '1', 'mainnet', 'MyPassword', 'MyPassword']
-    data = '\n'.join(inputs)
-    arguments = [
-        '--language', 'english',
-        'existing-mnemonic',
-        '--eth1_withdrawal_address', '',
-        '--folder', my_folder_path,
+    with TemporaryDirectory() as my_folder_path:
 
-    ]
-    result = runner.invoke(cli, arguments, input=data)
+        runner = CliRunner()
+        inputs = [
+            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+            '0', '0', '1', 'mainnet', 'MyPassword', 'MyPassword']
+        data = '\n'.join(inputs)
+        arguments = [
+            '--language', 'english',
+            'existing-mnemonic',
+            '--eth1_withdrawal_address', '',
+            '--folder', my_folder_path,
 
-    assert result.exit_code == 0
-    assert connectivity_called is True
+        ]
+        result = runner.invoke(cli, arguments, input=data)
 
-    clean_key_folder(my_folder_path)
+        assert result.exit_code == 0
+        assert connectivity_called is True
 
 
 def test_should_not_check_connectivity_with_ignore_connectivity(monkeypatch) -> None:
@@ -124,29 +120,26 @@ def test_should_not_check_connectivity_with_ignore_connectivity(monkeypatch) -> 
         raise OSError()
 
     monkeypatch.setattr(socket, 'getaddrinfo', _mock_socket_getaddrinfo)
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_key_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
-    runner = CliRunner()
-    inputs = [
-        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-        '0', '0', '1', 'mainnet', 'MyPassword', 'MyPassword']
-    data = '\n'.join(inputs)
-    arguments = [
-        '--language', 'english',
-        '--ignore_connectivity',
-        'existing-mnemonic',
-        '--eth1_withdrawal_address', '',
-        '--folder', my_folder_path,
 
-    ]
-    result = runner.invoke(cli, arguments, input=data)
+    with TemporaryDirectory() as my_folder_path:
 
-    assert result.exit_code == 0
-    assert connectivity_called is False
+        runner = CliRunner()
+        inputs = [
+            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+            '0', '0', '1', 'mainnet', 'MyPassword', 'MyPassword']
+        data = '\n'.join(inputs)
+        arguments = [
+            '--language', 'english',
+            '--ignore_connectivity',
+            'existing-mnemonic',
+            '--eth1_withdrawal_address', '',
+            '--folder', my_folder_path,
 
-    clean_key_folder(my_folder_path)
+        ]
+        result = runner.invoke(cli, arguments, input=data)
+
+        assert result.exit_code == 0
+        assert connectivity_called is False
 
 
 def test_should_not_check_connectivity_with_non_interactive(monkeypatch) -> None:
@@ -159,29 +152,25 @@ def test_should_not_check_connectivity_with_non_interactive(monkeypatch) -> None
 
     monkeypatch.setattr(socket, 'getaddrinfo', _mock_socket_getaddrinfo)
 
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_key_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
-    runner = CliRunner()
-    arguments = [
-        '--language', 'english',
-        '--non_interactive',
-        'existing-mnemonic',
-        '--num_validators', '1',
-        '--mnemonic', 'aban aban aban aban aban aban aban aban aban aban aban abou',
-        '--validator_start_index', '0',
-        '--chain', 'mainnet',
-        '--keystore_password', 'MyPassword',
-        '--eth1_withdrawal_address', '',
-        '--folder', my_folder_path,
-    ]
-    result = runner.invoke(cli, arguments)
+    with TemporaryDirectory() as my_folder_path:
 
-    assert result.exit_code == 0
-    assert connectivity_called is False
+        runner = CliRunner()
+        arguments = [
+            '--language', 'english',
+            '--non_interactive',
+            'existing-mnemonic',
+            '--num_validators', '1',
+            '--mnemonic', 'aban aban aban aban aban aban aban aban aban aban aban abou',
+            '--validator_start_index', '0',
+            '--chain', 'mainnet',
+            '--keystore_password', 'MyPassword',
+            '--eth1_withdrawal_address', '',
+            '--folder', my_folder_path,
+        ]
+        result = runner.invoke(cli, arguments)
 
-    clean_key_folder(my_folder_path)
+        assert result.exit_code == 0
+        assert connectivity_called is False
 
 
 def test_should_not_check_connectivity_with_both_non_interactive_or_ignore_connectivity(monkeypatch) -> None:
@@ -194,28 +183,24 @@ def test_should_not_check_connectivity_with_both_non_interactive_or_ignore_conne
 
     monkeypatch.setattr(socket, 'getaddrinfo', _mock_socket_getaddrinfo)
 
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_key_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
-    runner = CliRunner()
-    arguments = [
-        '--language', 'english',
-        '--non_interactive',
-        '--ignore_connectivity',
-        'existing-mnemonic',
-        '--num_validators', '1',
-        '--mnemonic', 'aban aban aban aban aban aban aban aban aban aban aban abou',
-        '--mnemonic_password', 'TREZOR',
-        '--validator_start_index', '0',
-        '--chain', 'mainnet',
-        '--keystore_password', 'MyPassword',
-        '--eth1_withdrawal_address', '',
-        '--folder', my_folder_path,
-    ]
-    result = runner.invoke(cli, arguments)
+    with TemporaryDirectory() as my_folder_path:
 
-    assert result.exit_code == 0
-    assert connectivity_called is False
+        runner = CliRunner()
+        arguments = [
+            '--language', 'english',
+            '--non_interactive',
+            '--ignore_connectivity',
+            'existing-mnemonic',
+            '--num_validators', '1',
+            '--mnemonic', 'aban aban aban aban aban aban aban aban aban aban aban abou',
+            '--mnemonic_password', 'TREZOR',
+            '--validator_start_index', '0',
+            '--chain', 'mainnet',
+            '--keystore_password', 'MyPassword',
+            '--eth1_withdrawal_address', '',
+            '--folder', my_folder_path,
+        ]
+        result = runner.invoke(cli, arguments)
 
-    clean_key_folder(my_folder_path)
+        assert result.exit_code == 0
+        assert connectivity_called is False

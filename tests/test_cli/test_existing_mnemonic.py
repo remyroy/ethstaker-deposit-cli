@@ -2,6 +2,8 @@ import asyncio
 import json
 import os
 
+from tempfile import TemporaryDirectory
+
 import pytest
 from click.testing import CliRunner
 
@@ -9,336 +11,299 @@ from eth_utils import decode_hex
 
 from ethstaker_deposit.deposit import cli
 from ethstaker_deposit.utils.constants import DEFAULT_VALIDATOR_KEYS_FOLDER_NAME, ETH1_ADDRESS_WITHDRAWAL_PREFIX
-from .helpers import clean_key_folder, get_permissions, get_uuid
+from .helpers import get_permissions, get_uuid
 
 
 def test_existing_mnemonic_bls_withdrawal() -> None:
     # Prepare folder
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_key_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
+    with TemporaryDirectory() as my_folder_path:
 
-    runner = CliRunner()
-    inputs = [
-        'TREZOR',
-        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-        '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword']
-    data = '\n'.join(inputs)
-    arguments = [
-        '--language', 'english',
-        '--ignore_connectivity',
-        'existing-mnemonic',
-        '--eth1_withdrawal_address', '',
-        '--folder', my_folder_path,
-        '--mnemonic_password', 'TREZOR',
-    ]
-    result = runner.invoke(cli, arguments, input=data)
+        runner = CliRunner()
+        inputs = [
+            'TREZOR',
+            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+            '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword']
+        data = '\n'.join(inputs)
+        arguments = [
+            '--language', 'english',
+            '--ignore_connectivity',
+            'existing-mnemonic',
+            '--eth1_withdrawal_address', '',
+            '--folder', my_folder_path,
+            '--mnemonic_password', 'TREZOR',
+        ]
+        result = runner.invoke(cli, arguments, input=data)
 
-    assert result.exit_code == 0
+        assert result.exit_code == 0
 
-    # Check files
-    validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-    _, _, key_files = next(os.walk(validator_keys_folder_path))
+        # Check files
+        validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+        _, _, key_files = next(os.walk(validator_keys_folder_path))
 
-    all_uuid = [
-        get_uuid(validator_keys_folder_path + '/' + key_file)
-        for key_file in key_files
-        if key_file.startswith('keystore')
-    ]
-    assert len(set(all_uuid)) == 5
+        all_uuid = [
+            get_uuid(validator_keys_folder_path + '/' + key_file)
+            for key_file in key_files
+            if key_file.startswith('keystore')
+        ]
+        assert len(set(all_uuid)) == 5
 
-    # Verify file permissions
-    if os.name == 'posix':
-        for file_name in key_files:
-            assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
-    # Clean up
-    clean_key_folder(my_folder_path)
+        # Verify file permissions
+        if os.name == 'posix':
+            for file_name in key_files:
+                assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
 
 
 def test_existing_mnemonic_eth1_address_withdrawal() -> None:
     # Prepare folder
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_key_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
+    with TemporaryDirectory() as my_folder_path:
 
-    runner = CliRunner()
-    eth1_withdrawal_address = '0x00000000219ab540356cBB839Cbe05303d7705Fa'
-    inputs = [
-        'TREZOR',
-        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-        '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword', eth1_withdrawal_address, eth1_withdrawal_address]
-    data = '\n'.join(inputs)
-    arguments = [
-        '--language', 'english',
-        '--ignore_connectivity',
-        'existing-mnemonic',
-        '--folder', my_folder_path,
-        '--mnemonic_password', 'TREZOR',
-    ]
-    result = runner.invoke(cli, arguments, input=data)
+        runner = CliRunner()
+        eth1_withdrawal_address = '0x00000000219ab540356cBB839Cbe05303d7705Fa'
+        inputs = [
+            'TREZOR',
+            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+            '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword', eth1_withdrawal_address, eth1_withdrawal_address]
+        data = '\n'.join(inputs)
+        arguments = [
+            '--language', 'english',
+            '--ignore_connectivity',
+            'existing-mnemonic',
+            '--folder', my_folder_path,
+            '--mnemonic_password', 'TREZOR',
+        ]
+        result = runner.invoke(cli, arguments, input=data)
 
-    assert result.exit_code == 0
+        assert result.exit_code == 0
 
-    # Check files
-    validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-    _, _, key_files = next(os.walk(validator_keys_folder_path))
+        # Check files
+        validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+        _, _, key_files = next(os.walk(validator_keys_folder_path))
 
-    deposit_file = [key_file for key_file in key_files if key_file.startswith('deposit_data')][0]
-    with open(validator_keys_folder_path + '/' + deposit_file, 'r', encoding='utf-8') as f:
-        deposits_dict = json.load(f)
-    for deposit in deposits_dict:
-        withdrawal_credentials = bytes.fromhex(deposit['withdrawal_credentials'])
-        assert withdrawal_credentials == (
-            ETH1_ADDRESS_WITHDRAWAL_PREFIX + b'\x00' * 11 + decode_hex(eth1_withdrawal_address)
-        )
+        deposit_file = [key_file for key_file in key_files if key_file.startswith('deposit_data')][0]
+        with open(validator_keys_folder_path + '/' + deposit_file, 'r', encoding='utf-8') as f:
+            deposits_dict = json.load(f)
+        for deposit in deposits_dict:
+            withdrawal_credentials = bytes.fromhex(deposit['withdrawal_credentials'])
+            assert withdrawal_credentials == (
+                ETH1_ADDRESS_WITHDRAWAL_PREFIX + b'\x00' * 11 + decode_hex(eth1_withdrawal_address)
+            )
 
-    all_uuid = [
-        get_uuid(validator_keys_folder_path + '/' + key_file)
-        for key_file in key_files
-        if key_file.startswith('keystore')
-    ]
-    assert len(set(all_uuid)) == 5
+        all_uuid = [
+            get_uuid(validator_keys_folder_path + '/' + key_file)
+            for key_file in key_files
+            if key_file.startswith('keystore')
+        ]
+        assert len(set(all_uuid)) == 5
 
-    # Verify file permissions
-    if os.name == 'posix':
-        for file_name in key_files:
-            assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
-    # Clean up
-    clean_key_folder(my_folder_path)
+        # Verify file permissions
+        if os.name == 'posix':
+            for file_name in key_files:
+                assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
 
 
 def test_existing_mnemonic_eth1_address_withdrawal_bad_checksum() -> None:
     # Prepare folder
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_key_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
+    with TemporaryDirectory() as my_folder_path:
 
-    runner = CliRunner()
+        runner = CliRunner()
 
-    # NOTE: final 'A' needed to be an 'a'
-    wrong_eth1_withdrawal_address = '0x00000000219ab540356cBB839Cbe05303d7705FA'
-    correct_eth1_withdrawal_address = '0x00000000219ab540356cBB839Cbe05303d7705Fa'
+        # NOTE: final 'A' needed to be an 'a'
+        wrong_eth1_withdrawal_address = '0x00000000219ab540356cBB839Cbe05303d7705FA'
+        correct_eth1_withdrawal_address = '0x00000000219ab540356cBB839Cbe05303d7705Fa'
 
-    inputs = [
-        'TREZOR',
-        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-        '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword',
-        wrong_eth1_withdrawal_address, correct_eth1_withdrawal_address, correct_eth1_withdrawal_address
-    ]
-    data = '\n'.join(inputs)
-    arguments = [
-        '--language', 'english',
-        '--ignore_connectivity',
-        'existing-mnemonic',
-        '--folder', my_folder_path,
-        '--mnemonic_password', 'TREZOR',
-    ]
-    result = runner.invoke(cli, arguments, input=data)
+        inputs = [
+            'TREZOR',
+            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+            '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword',
+            wrong_eth1_withdrawal_address, correct_eth1_withdrawal_address, correct_eth1_withdrawal_address
+        ]
+        data = '\n'.join(inputs)
+        arguments = [
+            '--language', 'english',
+            '--ignore_connectivity',
+            'existing-mnemonic',
+            '--folder', my_folder_path,
+            '--mnemonic_password', 'TREZOR',
+        ]
+        result = runner.invoke(cli, arguments, input=data)
 
-    assert result.exit_code == 0
+        assert result.exit_code == 0
 
-    # Check files
-    validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-    _, _, key_files = next(os.walk(validator_keys_folder_path))
+        # Check files
+        validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+        _, _, key_files = next(os.walk(validator_keys_folder_path))
 
-    deposit_file = [key_file for key_file in key_files if key_file.startswith('deposit_data')][0]
-    with open(validator_keys_folder_path + '/' + deposit_file, 'r', encoding='utf-8') as f:
-        deposits_dict = json.load(f)
-    for deposit in deposits_dict:
-        withdrawal_credentials = bytes.fromhex(deposit['withdrawal_credentials'])
-        assert withdrawal_credentials == (
-            ETH1_ADDRESS_WITHDRAWAL_PREFIX + b'\x00' * 11 + decode_hex(correct_eth1_withdrawal_address)
-        )
+        deposit_file = [key_file for key_file in key_files if key_file.startswith('deposit_data')][0]
+        with open(validator_keys_folder_path + '/' + deposit_file, 'r', encoding='utf-8') as f:
+            deposits_dict = json.load(f)
+        for deposit in deposits_dict:
+            withdrawal_credentials = bytes.fromhex(deposit['withdrawal_credentials'])
+            assert withdrawal_credentials == (
+                ETH1_ADDRESS_WITHDRAWAL_PREFIX + b'\x00' * 11 + decode_hex(correct_eth1_withdrawal_address)
+            )
 
-    all_uuid = [
-        get_uuid(validator_keys_folder_path + '/' + key_file)
-        for key_file in key_files
-        if key_file.startswith('keystore')
-    ]
-    assert len(set(all_uuid)) == 5
+        all_uuid = [
+            get_uuid(validator_keys_folder_path + '/' + key_file)
+            for key_file in key_files
+            if key_file.startswith('keystore')
+        ]
+        assert len(set(all_uuid)) == 5
 
-    # Verify file permissions
-    if os.name == 'posix':
-        for file_name in key_files:
-            assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
-    # Clean up
-    clean_key_folder(my_folder_path)
+        # Verify file permissions
+        if os.name == 'posix':
+            for file_name in key_files:
+                assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
 
 
 def test_pbkdf2_new_mnemonic() -> None:
-    # Prepare pbkdf2 folder
-    pbkdf2_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_key_folder(pbkdf2_folder_path)
-    if not os.path.exists(pbkdf2_folder_path):
-        os.mkdir(pbkdf2_folder_path)
+    # Prepare pbkdf2 folder and scrypt folder
+    with TemporaryDirectory() as pbkdf2_folder_path, TemporaryDirectory() as scrypt_folder_path:
 
-    # Prepare scrypt folder
-    scrypt_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER_2')
-    clean_key_folder(scrypt_folder_path)
-    if not os.path.exists(scrypt_folder_path):
-        os.mkdir(scrypt_folder_path)
+        runner = CliRunner()
+        inputs = [
+            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+            '0', '0', '1', 'mainnet', 'MyPassword', 'MyPassword',
+        ]
+        data = '\n'.join(inputs)
+        arguments = [
+            '--language', 'english',
+            'existing-mnemonic',
+            '--eth1_withdrawal_address', '',
+            '--folder', pbkdf2_folder_path,
+            '--pbkdf2',
+        ]
+        result = runner.invoke(cli, arguments, input=data)
+        assert result.exit_code == 0
 
-    runner = CliRunner()
-    inputs = [
-        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-        '0', '0', '1', 'mainnet', 'MyPassword', 'MyPassword',
-    ]
-    data = '\n'.join(inputs)
-    arguments = [
-        '--language', 'english',
-        'existing-mnemonic',
-        '--eth1_withdrawal_address', '',
-        '--folder', pbkdf2_folder_path,
-        '--pbkdf2',
-    ]
-    result = runner.invoke(cli, arguments, input=data)
-    assert result.exit_code == 0
+        arguments = [
+            '--language', 'english',
+            'existing-mnemonic',
+            '--eth1_withdrawal_address', '',
+            '--folder', scrypt_folder_path,
+        ]
+        result = runner.invoke(cli, arguments, input=data)
+        assert result.exit_code == 0
 
-    arguments = [
-        '--language', 'english',
-        'existing-mnemonic',
-        '--eth1_withdrawal_address', '',
-        '--folder', scrypt_folder_path,
-    ]
-    result = runner.invoke(cli, arguments, input=data)
-    assert result.exit_code == 0
+        # Load store generated files
+        validator_keys_folder_path = os.path.join(pbkdf2_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+        _, _, key_files = next(os.walk(validator_keys_folder_path))
 
-    # Load store generated files
-    validator_keys_folder_path = os.path.join(pbkdf2_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-    _, _, key_files = next(os.walk(validator_keys_folder_path))
+        deposit_file = [key_file for key_file in key_files if key_file.startswith('deposit_data')][0]
+        with open(validator_keys_folder_path + '/' + deposit_file, 'r', encoding='utf-8') as f:
+            pbkdf2_deposit_dict = json.load(f)[0]
 
-    deposit_file = [key_file for key_file in key_files if key_file.startswith('deposit_data')][0]
-    with open(validator_keys_folder_path + '/' + deposit_file, 'r', encoding='utf-8') as f:
-        pbkdf2_deposit_dict = json.load(f)[0]
+        keystore_file = [key_file for key_file in key_files if key_file.startswith('keystore-m_')][0]
+        with open(validator_keys_folder_path + '/' + keystore_file, 'r', encoding='utf-8') as f:
+            pbkdf2_keystore_dict = json.load(f)
 
-    keystore_file = [key_file for key_file in key_files if key_file.startswith('keystore-m_')][0]
-    with open(validator_keys_folder_path + '/' + keystore_file, 'r', encoding='utf-8') as f:
-        pbkdf2_keystore_dict = json.load(f)
+        validator_keys_folder_path = os.path.join(scrypt_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+        _, _, key_files = next(os.walk(validator_keys_folder_path))
 
-    validator_keys_folder_path = os.path.join(scrypt_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-    _, _, key_files = next(os.walk(validator_keys_folder_path))
+        deposit_file = [key_file for key_file in key_files if key_file.startswith('deposit_data')][0]
+        with open(validator_keys_folder_path + '/' + deposit_file, 'r', encoding='utf-8') as f:
+            scrypt_deposit_dict = json.load(f)[0]
 
-    deposit_file = [key_file for key_file in key_files if key_file.startswith('deposit_data')][0]
-    with open(validator_keys_folder_path + '/' + deposit_file, 'r', encoding='utf-8') as f:
-        scrypt_deposit_dict = json.load(f)[0]
+        keystore_file = [key_file for key_file in key_files if key_file.startswith('keystore-m_')][0]
+        with open(validator_keys_folder_path + '/' + keystore_file, 'r', encoding='utf-8') as f:
+            scrypt_keystore_dict = json.load(f)
 
-    keystore_file = [key_file for key_file in key_files if key_file.startswith('keystore-m_')][0]
-    with open(validator_keys_folder_path + '/' + keystore_file, 'r', encoding='utf-8') as f:
-        scrypt_keystore_dict = json.load(f)
+        # Verify deposit files
+        assert pbkdf2_deposit_dict['withdrawal_credentials'] == scrypt_deposit_dict['withdrawal_credentials']
+        assert pbkdf2_deposit_dict['pubkey'] == scrypt_deposit_dict['pubkey']
+        assert pbkdf2_deposit_dict['signature'] == scrypt_deposit_dict['signature']
+        assert pbkdf2_deposit_dict['deposit_message_root'] == scrypt_deposit_dict['deposit_message_root']
+        assert pbkdf2_deposit_dict['deposit_data_root'] == scrypt_deposit_dict['deposit_data_root']
 
-    # Verify deposit files
-    assert pbkdf2_deposit_dict['withdrawal_credentials'] == scrypt_deposit_dict['withdrawal_credentials']
-    assert pbkdf2_deposit_dict['pubkey'] == scrypt_deposit_dict['pubkey']
-    assert pbkdf2_deposit_dict['signature'] == scrypt_deposit_dict['signature']
-    assert pbkdf2_deposit_dict['deposit_message_root'] == scrypt_deposit_dict['deposit_message_root']
-    assert pbkdf2_deposit_dict['deposit_data_root'] == scrypt_deposit_dict['deposit_data_root']
-
-    # Verify keystore files
-    assert pbkdf2_keystore_dict['crypto']['kdf']['function'] == 'pbkdf2'
-    assert scrypt_keystore_dict['crypto']['kdf']['function'] == 'scrypt'
-    assert pbkdf2_keystore_dict['pubkey'] == scrypt_keystore_dict['pubkey']
-
-    # Clean up
-    clean_key_folder(pbkdf2_folder_path)
-    clean_key_folder(scrypt_folder_path)
+        # Verify keystore files
+        assert pbkdf2_keystore_dict['crypto']['kdf']['function'] == 'pbkdf2'
+        assert scrypt_keystore_dict['crypto']['kdf']['function'] == 'scrypt'
+        assert pbkdf2_keystore_dict['pubkey'] == scrypt_keystore_dict['pubkey']
 
 
 @pytest.mark.asyncio
 async def test_script() -> None:
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
+    with TemporaryDirectory() as my_folder_path:
 
-    if os.name == 'nt':  # Windows
-        run_script_cmd = 'sh deposit.sh'
-    else:  # Mac or Linux
-        run_script_cmd = './deposit.sh'
+        if os.name == 'nt':  # Windows
+            run_script_cmd = 'sh deposit.sh'
+        else:  # Mac or Linux
+            run_script_cmd = './deposit.sh'
 
-    install_cmd = run_script_cmd + ' install'
-    proc = await asyncio.create_subprocess_shell(
-        install_cmd,
-    )
-    await proc.wait()
+        install_cmd = run_script_cmd + ' install'
+        proc = await asyncio.create_subprocess_shell(
+            install_cmd,
+        )
+        await proc.wait()
 
-    cmd_args = [
-        run_script_cmd,
-        '--language', 'english',
-        '--non_interactive',
-        'existing-mnemonic',
-        '--num_validators', '1',
-        '--mnemonic="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"',
-        '--mnemonic_password', 'TREZOR',
-        '--validator_start_index', '1',
-        '--chain', 'mainnet',
-        '--keystore_password', 'MyPassword',
-        '--eth1_withdrawal_address', '""',
-        '--folder', my_folder_path,
-    ]
-    proc = await asyncio.create_subprocess_shell(
-        ' '.join(cmd_args),
-    )
-    await proc.wait()
+        cmd_args = [
+            run_script_cmd,
+            '--language', 'english',
+            '--non_interactive',
+            'existing-mnemonic',
+            '--num_validators', '1',
+            '--mnemonic="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon '
+            'about"',
+            '--mnemonic_password', 'TREZOR',
+            '--validator_start_index', '1',
+            '--chain', 'mainnet',
+            '--keystore_password', 'MyPassword',
+            '--eth1_withdrawal_address', '""',
+            '--folder', my_folder_path,
+        ]
+        proc = await asyncio.create_subprocess_shell(
+            ' '.join(cmd_args),
+        )
+        await proc.wait()
 
-    # Check files
-    validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-    _, _, key_files = next(os.walk(validator_keys_folder_path))
+        # Check files
+        validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+        _, _, key_files = next(os.walk(validator_keys_folder_path))
 
-    # Verify file permissions
-    if os.name == 'posix':
-        for file_name in key_files:
-            assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
-
-    # Clean up
-    clean_key_folder(my_folder_path)
+        # Verify file permissions
+        if os.name == 'posix':
+            for file_name in key_files:
+                assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
 
 
 @pytest.mark.asyncio
 async def test_script_abbreviated_mnemonic() -> None:
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
+    with TemporaryDirectory() as my_folder_path:
 
-    if os.name == 'nt':  # Windows
-        run_script_cmd = 'sh deposit.sh'
-    else:  # Mac or Linux
-        run_script_cmd = './deposit.sh'
+        if os.name == 'nt':  # Windows
+            run_script_cmd = 'sh deposit.sh'
+        else:  # Mac or Linux
+            run_script_cmd = './deposit.sh'
 
-    install_cmd = run_script_cmd + ' install'
-    proc = await asyncio.create_subprocess_shell(
-        install_cmd,
-    )
-    await proc.wait()
+        install_cmd = run_script_cmd + ' install'
+        proc = await asyncio.create_subprocess_shell(
+            install_cmd,
+        )
+        await proc.wait()
 
-    cmd_args = [
-        run_script_cmd,
-        '--language', 'english',
-        '--non_interactive',
-        'existing-mnemonic',
-        '--num_validators', '1',
-        '--mnemonic="aban aban aban aban aban aban aban aban aban aban aban abou"',
-        '--mnemonic_password', 'TREZOR',
-        '--validator_start_index', '1',
-        '--chain', 'mainnet',
-        '--keystore_password', 'MyPassword',
-        '--eth1_withdrawal_address', '""',
-        '--folder', my_folder_path,
-    ]
-    proc = await asyncio.create_subprocess_shell(
-        ' '.join(cmd_args),
-    )
-    await proc.wait()
+        cmd_args = [
+            run_script_cmd,
+            '--language', 'english',
+            '--non_interactive',
+            'existing-mnemonic',
+            '--num_validators', '1',
+            '--mnemonic="aban aban aban aban aban aban aban aban aban aban aban abou"',
+            '--mnemonic_password', 'TREZOR',
+            '--validator_start_index', '1',
+            '--chain', 'mainnet',
+            '--keystore_password', 'MyPassword',
+            '--eth1_withdrawal_address', '""',
+            '--folder', my_folder_path,
+        ]
+        proc = await asyncio.create_subprocess_shell(
+            ' '.join(cmd_args),
+        )
+        await proc.wait()
 
-    # Check files
-    validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-    _, _, key_files = next(os.walk(validator_keys_folder_path))
+        # Check files
+        validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+        _, _, key_files = next(os.walk(validator_keys_folder_path))
 
-    # Verify file permissions
-    if os.name == 'posix':
-        for file_name in key_files:
-            assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
-
-    # Clean up
-    clean_key_folder(my_folder_path)
+        # Verify file permissions
+        if os.name == 'posix':
+            for file_name in key_files:
+                assert get_permissions(validator_keys_folder_path, file_name) == '0o440'

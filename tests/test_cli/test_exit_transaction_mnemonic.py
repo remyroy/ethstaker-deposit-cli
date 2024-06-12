@@ -2,116 +2,106 @@ import asyncio
 import os
 import pytest
 
+from tempfile import TemporaryDirectory
+
 from click.testing import CliRunner
 
 from ethstaker_deposit.deposit import cli
 from ethstaker_deposit.utils.constants import DEFAULT_EXIT_TRANSACTION_FOLDER_NAME
 
-from tests.test_cli.helpers import clean_exit_transaction_folder, read_json_file, verify_file_permission
+from tests.test_cli.helpers import read_json_file, verify_file_permission
 
 
 def test_exit_transaction_mnemonic() -> None:
     # Prepare folder
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_exit_transaction_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
+    with TemporaryDirectory() as my_folder_path:
 
-    runner = CliRunner()
-    inputs = []
-    data = '\n'.join(inputs)
-    arguments = [
-        '--language', 'english',
-        '--non_interactive',
-        'exit-transaction-mnemonic',
-        '--output_folder', my_folder_path,
-        '--chain', 'mainnet',
-        '--mnemonic', 'aban aban aban aban aban aban aban aban aban aban aban abou',
-        '--validator_start_index', '0',
-        '--validator_indices', '1',
-        '--epoch', '1234',
-    ]
-    result = runner.invoke(cli, arguments, input=data)
+        runner = CliRunner()
+        inputs = []
+        data = '\n'.join(inputs)
+        arguments = [
+            '--language', 'english',
+            '--non_interactive',
+            'exit-transaction-mnemonic',
+            '--output_folder', my_folder_path,
+            '--chain', 'mainnet',
+            '--mnemonic', 'aban aban aban aban aban aban aban aban aban aban aban abou',
+            '--validator_start_index', '0',
+            '--validator_indices', '1',
+            '--epoch', '1234',
+        ]
+        result = runner.invoke(cli, arguments, input=data)
 
-    assert result.exit_code == 0
+        assert result.exit_code == 0
 
-    # Check files
-    exit_transaction_folder_path = os.path.join(my_folder_path, DEFAULT_EXIT_TRANSACTION_FOLDER_NAME)
-    _, _, exit_transaction_files = next(os.walk(exit_transaction_folder_path))
+        # Check files
+        exit_transaction_folder_path = os.path.join(my_folder_path, DEFAULT_EXIT_TRANSACTION_FOLDER_NAME)
+        _, _, exit_transaction_files = next(os.walk(exit_transaction_folder_path))
 
-    assert len(set(exit_transaction_files)) == 1
+        assert len(set(exit_transaction_files)) == 1
 
-    json_data = read_json_file(exit_transaction_folder_path, exit_transaction_files[0])
+        json_data = read_json_file(exit_transaction_folder_path, exit_transaction_files[0])
 
-    # Verify file content
-    assert json_data['message']['epoch'] == '1234'
-    assert json_data['message']['validator_index'] == '1'
-    assert json_data['signature']
+        # Verify file content
+        assert json_data['message']['epoch'] == '1234'
+        assert json_data['message']['validator_index'] == '1'
+        assert json_data['signature']
 
-    # Verify file permissions
-    verify_file_permission(os, folder_path=exit_transaction_folder_path, files=exit_transaction_files)
-
-    # Clean up
-    clean_exit_transaction_folder(my_folder_path)
+        # Verify file permissions
+        verify_file_permission(os, folder_path=exit_transaction_folder_path, files=exit_transaction_files)
 
 
 @pytest.mark.asyncio
 async def test_exit_transaction_mnemonic_multiple() -> None:
     # Prepare folder
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_exit_transaction_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
+    with TemporaryDirectory() as my_folder_path:
 
-    if os.name == 'nt':  # Windows
-        run_script_cmd = 'sh deposit.sh'
-    else:  # Mac or Linux
-        run_script_cmd = './deposit.sh'
+        if os.name == 'nt':  # Windows
+            run_script_cmd = 'sh deposit.sh'
+        else:  # Mac or Linux
+            run_script_cmd = './deposit.sh'
 
-    install_cmd = run_script_cmd + ' install'
-    proc = await asyncio.create_subprocess_shell(
-        install_cmd,
-    )
-    await proc.wait()
+        install_cmd = run_script_cmd + ' install'
+        proc = await asyncio.create_subprocess_shell(
+            install_cmd,
+        )
+        await proc.wait()
 
-    cmd_args = [
-        run_script_cmd,
-        '--language', 'english',
-        '--non_interactive',
-        'exit-transaction-mnemonic',
-        '--output_folder', my_folder_path,
-        '--chain', 'mainnet',
-        '--mnemonic', '"aban aban aban aban aban aban aban aban aban aban aban abou"',
-        '--validator_start_index', '0',
-        '--validator_indices', '0,1,2,3',
-        '--epoch', '1234',
-    ]
-    proc = await asyncio.create_subprocess_shell(
-        ' '.join(cmd_args),
-    )
-    await proc.wait()
+        cmd_args = [
+            run_script_cmd,
+            '--language', 'english',
+            '--non_interactive',
+            'exit-transaction-mnemonic',
+            '--output_folder', my_folder_path,
+            '--chain', 'mainnet',
+            '--mnemonic', '"aban aban aban aban aban aban aban aban aban aban aban abou"',
+            '--validator_start_index', '0',
+            '--validator_indices', '0,1,2,3',
+            '--epoch', '1234',
+        ]
+        proc = await asyncio.create_subprocess_shell(
+            ' '.join(cmd_args),
+        )
+        await proc.wait()
 
-    assert proc.returncode == 0
+        assert proc.returncode == 0
 
-    # Check files
-    exit_transaction_folder_path = os.path.join(my_folder_path, DEFAULT_EXIT_TRANSACTION_FOLDER_NAME)
-    _, _, exit_transaction_files = next(os.walk(exit_transaction_folder_path))
+        # Check files
+        exit_transaction_folder_path = os.path.join(my_folder_path, DEFAULT_EXIT_TRANSACTION_FOLDER_NAME)
+        _, _, exit_transaction_files = next(os.walk(exit_transaction_folder_path))
 
-    assert len(set(exit_transaction_files)) == 4
+        assert len(set(exit_transaction_files)) == 4
 
-    # Verify file content
-    exit_transaction_files.sort()
-    for index in [0, 1, 2, 3]:
-        json_data = read_json_file(exit_transaction_folder_path, exit_transaction_files[index])
-        assert json_data['message']['epoch'] == '1234'
-        assert json_data['message']['validator_index'] == str(index)
-        assert json_data['signature']
+        # Verify file content
+        exit_transaction_files.sort()
+        for index in [0, 1, 2, 3]:
+            json_data = read_json_file(exit_transaction_folder_path, exit_transaction_files[index])
+            assert json_data['message']['epoch'] == '1234'
+            assert json_data['message']['validator_index'] == str(index)
+            assert json_data['signature']
 
-    # Verify file permissions
-    verify_file_permission(os, folder_path=exit_transaction_folder_path, files=exit_transaction_files)
-
-    # Clean up
-    clean_exit_transaction_folder(my_folder_path)
+        # Verify file permissions
+        verify_file_permission(os, folder_path=exit_transaction_folder_path, files=exit_transaction_files)
 
 
 @pytest.mark.parametrize(
@@ -126,25 +116,23 @@ async def test_exit_transaction_mnemonic_multiple() -> None:
     ]
 )
 def test_exit_mnemonic_invalid_params(chain, mnemonic, start_index, indices, epoch, assertion) -> None:
-    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
-    clean_exit_transaction_folder(my_folder_path)
-    if not os.path.exists(my_folder_path):
-        os.mkdir(my_folder_path)
+    # Prepare folder
+    with TemporaryDirectory() as my_folder_path:
 
-    runner = CliRunner()
-    inputs = []
-    data = '\n'.join(inputs)
-    arguments = [
-        '--language', 'english',
-        '--non_interactive',
-        'exit-transaction-mnemonic',
-        '--output_folder', my_folder_path,
-        '--chain', chain,
-        '--mnemonic', mnemonic,
-        '--validator_start_index', start_index,
-        '--validator_indices', indices,
-        '--epoch', epoch,
-    ]
-    result = runner.invoke(cli, arguments, input=data)
+        runner = CliRunner()
+        inputs = []
+        data = '\n'.join(inputs)
+        arguments = [
+            '--language', 'english',
+            '--non_interactive',
+            'exit-transaction-mnemonic',
+            '--output_folder', my_folder_path,
+            '--chain', chain,
+            '--mnemonic', mnemonic,
+            '--validator_start_index', start_index,
+            '--validator_indices', indices,
+            '--epoch', epoch,
+        ]
+        result = runner.invoke(cli, arguments, input=data)
 
-    assert result.exit_code == assertion
+        assert result.exit_code == assertion
