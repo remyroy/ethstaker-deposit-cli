@@ -65,10 +65,6 @@ async def main():
 
         await proc.wait()
 
-        # Check files
-        validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-        _, _, key_files = next(os.walk(validator_keys_folder_path))
-
 
 if os.name == 'nt':  # Windows
     loop = asyncio.ProactorEventLoop()
