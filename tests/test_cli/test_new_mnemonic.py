@@ -342,6 +342,7 @@ async def test_script_bls_withdrawal() -> None:
             *cmd_args,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
         )
 
         seed_phrase = ''
@@ -438,6 +439,7 @@ async def test_script_abbreviated_mnemonic() -> None:
             *cmd_args,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
         )
 
         seed_phrase = ''
