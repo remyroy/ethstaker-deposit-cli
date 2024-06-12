@@ -386,7 +386,7 @@ async def test_script_bls_withdrawal() -> None:
         await proc.wait()
         logger.debug('After proc.wait()')
 
-        logger.debug(f'proc.returncode: {proc.returncode}') 
+        logger.debug(f'proc.returncode: {proc.returncode}')
 
         logger.debug(f'eof after last wait: {proc.stdout.at_eof()}')
 
@@ -483,7 +483,7 @@ async def test_script_abbreviated_mnemonic() -> None:
         await proc.wait()
         logger.debug('After proc.wait()')
 
-        logger.debug(f'proc.returncode: {proc.returncode}') 
+        logger.debug(f'proc.returncode: {proc.returncode}')
 
         logger.debug(f'eof after last wait: {proc.stdout.at_eof()}')
 
