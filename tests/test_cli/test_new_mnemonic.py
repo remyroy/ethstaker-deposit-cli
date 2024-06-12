@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import sys
 
 from tempfile import TemporaryDirectory
 
@@ -322,19 +323,7 @@ async def test_script_bls_withdrawal() -> None:
     # Prepare folder
     with TemporaryDirectory() as my_folder_path:
 
-        if os.name == 'nt':  # Windows
-            run_script_cmd = 'sh deposit.sh'
-        else:  # Mac or Linux
-            run_script_cmd = './deposit.sh'
-
-        install_cmd = run_script_cmd + ' install'
-        proc = await asyncio.create_subprocess_shell(
-            install_cmd,
-        )
-        await proc.wait()
-
         cmd_args = [
-            run_script_cmd,
             '--language', 'english',
             '--non_interactive',
             'new-mnemonic',
@@ -342,11 +331,12 @@ async def test_script_bls_withdrawal() -> None:
             '--mnemonic_language', 'english',
             '--chain', 'mainnet',
             '--keystore_password', 'MyPassword',
-            '--eth1_withdrawal_address', '""',
+            '--eth1_withdrawal_address', '',
             '--folder', my_folder_path,
         ]
-        proc = await asyncio.create_subprocess_shell(
-            ' '.join(cmd_args),
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, '-m', 'ethstaker_deposit',
+            *cmd_args,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
         )
@@ -407,19 +397,7 @@ async def test_script_abbreviated_mnemonic() -> None:
     # Prepare folder
     with TemporaryDirectory() as my_folder_path:
 
-        if os.name == 'nt':  # Windows
-            run_script_cmd = 'sh deposit.sh'
-        else:  # Mac or Linux
-            run_script_cmd = './deposit.sh'
-
-        install_cmd = run_script_cmd + ' install'
-        proc = await asyncio.create_subprocess_shell(
-            install_cmd,
-        )
-        await proc.wait()
-
         cmd_args = [
-            run_script_cmd,
             '--language', 'english',
             '--non_interactive',
             'new-mnemonic',
@@ -427,11 +405,12 @@ async def test_script_abbreviated_mnemonic() -> None:
             '--mnemonic_language', 'english',
             '--chain', 'mainnet',
             '--keystore_password', 'MyPassword',
-            '--eth1_withdrawal_address', '""',
+            '--eth1_withdrawal_address', '',
             '--folder', my_folder_path,
         ]
-        proc = await asyncio.create_subprocess_shell(
-            ' '.join(cmd_args),
+        proc = await asyncio.create_subprocess_exec(
+            sys.executable, '-m', 'ethstaker_deposit',
+            *cmd_args,
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
         )
