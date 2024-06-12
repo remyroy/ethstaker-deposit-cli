@@ -438,7 +438,7 @@ async def test_script_abbreviated_mnemonic() -> None:
         parsing = False
         mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/',
                                           'new_mnemonic.json')
-        
+
         msg_mnemonic_presentation = load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')
         msg_mnemonic_retype_prompt = load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')
 
@@ -459,7 +459,7 @@ async def test_script_abbreviated_mnemonic() -> None:
                     logger.debug('Writing space')
                     proc.stdin.write(b' ')
                     parsing = False
-        
+
         logger.debug(f'eof after loop: {proc.stdout.at_eof()}')
 
         assert len(seed_phrase) > 0
