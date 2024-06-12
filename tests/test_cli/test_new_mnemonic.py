@@ -346,7 +346,6 @@ async def test_script_bls_withdrawal() -> None:
 
         seed_phrase = ''
         parsing = False
-        input_prompt = False
         mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/',
                                           'new_mnemonic.json')
 
@@ -356,26 +355,18 @@ async def test_script_bls_withdrawal() -> None:
         async for out in proc.stdout:
             logger.debug(f'eof: {proc.stdout.at_eof()}')
             output = out.decode('utf-8').rstrip()
-            logger.debug(f'parsing: {parsing}, input_prompt: {input_prompt}, output: {output}')
-            ready_write = output.startswith(':') and input_prompt
-            logger.debug(f'ready_write: {ready_write}')
+            logger.debug(f'parsing: {parsing}, output: {output}')
             if output.startswith(msg_mnemonic_presentation):
                 parsing = True
             elif output.startswith(msg_mnemonic_retype_prompt):
-                input_prompt = True
-            elif ready_write:
                 encoded_phrase = seed_phrase.encode()
                 logger.debug(f'Writing: {seed_phrase}')
                 proc.stdin.write(encoded_phrase + b'\n')
-                input_prompt = False
-                logger.debug(f'eof before sleep: {proc.stdout.at_eof()}')
-                await asyncio.sleep(5)
-                logger.debug(f'eof after sleep: {proc.stdout.at_eof()}')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
-                    logger.debug('Writing new line')
-                    proc.stdin.write(b'\n')
+                    logger.debug('Writing space')
+                    proc.stdin.write(b' ')
                     parsing = False
 
         logger.debug(f'eof after loop: {proc.stdout.at_eof()}')
@@ -445,7 +436,6 @@ async def test_script_abbreviated_mnemonic() -> None:
 
         seed_phrase = ''
         parsing = False
-        input_prompt = False
         mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/',
                                           'new_mnemonic.json')
         
@@ -455,27 +445,19 @@ async def test_script_abbreviated_mnemonic() -> None:
         async for out in proc.stdout:
             logger.debug(f'eof: {proc.stdout.at_eof()}')
             output = out.decode('utf-8').rstrip()
-            logger.debug(f'parsing: {parsing}, input_prompt: {input_prompt}, output: {output}')
-            ready_write = output.startswith(':') and input_prompt
-            logger.debug(f'ready_write: {ready_write}')
+            logger.debug(f'parsing: {parsing}, output: {output}')
             if output.startswith(msg_mnemonic_presentation):
                 parsing = True
             elif output.startswith(msg_mnemonic_retype_prompt):
-                input_prompt = True
-            elif ready_write:
                 abbreviated_mnemonic = ' '.join(abbreviate_words(seed_phrase.split(' ')))
                 encoded_phrase = abbreviated_mnemonic.encode()
                 logger.debug(f'Writing: {abbreviated_mnemonic}')
                 proc.stdin.write(encoded_phrase + b'\n')
-                input_prompt = False
-                logger.debug(f'eof before sleep: {proc.stdout.at_eof()}')
-                await asyncio.sleep(5)
-                logger.debug(f'eof after sleep: {proc.stdout.at_eof()}')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
-                    logger.debug('Writing new line')
-                    proc.stdin.write(b'\n')
+                    logger.debug('Writing space')
+                    proc.stdin.write(b' ')
                     parsing = False
         
         logger.debug(f'eof after loop: {proc.stdout.at_eof()}')
