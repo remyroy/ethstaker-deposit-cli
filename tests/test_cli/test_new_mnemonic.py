@@ -345,6 +345,7 @@ async def test_script_bls_withdrawal() -> None:
         )
 
         seed_phrase = ''
+        count = 0
         parsing = False
         mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/',
                                           'new_mnemonic.json')
@@ -352,20 +353,19 @@ async def test_script_bls_withdrawal() -> None:
         msg_mnemonic_presentation = load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')
         msg_mnemonic_retype_prompt = load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')
 
-        logger.debug(f'msg_mnemonic_presentation: {msg_mnemonic_presentation}')
-        logger.debug(f'msg_mnemonic_retype_prompt: {msg_mnemonic_retype_prompt}')
-
         async for out in proc.stdout:
             output = out.decode('utf-8').rstrip()
             logger.debug(f'parsing: {parsing}, output: {output}')
             if output.startswith(msg_mnemonic_presentation):
                 parsing = True
-            elif output.startswith(msg_mnemonic_retype_prompt):
-                encoded_phrase = seed_phrase.encode()
-                logger.debug(f'Writing: {seed_phrase}')
-                proc.stdin.write(encoded_phrase)
-                logger.debug('Writing new line')
-                proc.stdin.write(b'\n')
+            elif output.endswith(msg_mnemonic_retype_prompt):
+                count += 1
+                if count == 2:
+                    encoded_phrase = seed_phrase.encode()
+                    logger.debug(f'Writing: {seed_phrase}')
+                    proc.stdin.write(encoded_phrase)
+                    logger.debug('Writing new line')
+                    proc.stdin.write(b'\n')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
@@ -435,6 +435,7 @@ async def test_script_abbreviated_mnemonic() -> None:
         )
 
         seed_phrase = ''
+        count = 0
         parsing = False
         mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/',
                                           'new_mnemonic.json')
@@ -442,21 +443,20 @@ async def test_script_abbreviated_mnemonic() -> None:
         msg_mnemonic_presentation = load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')
         msg_mnemonic_retype_prompt = load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')
 
-        logger.debug(f'msg_mnemonic_presentation: {msg_mnemonic_presentation}')
-        logger.debug(f'msg_mnemonic_retype_prompt: {msg_mnemonic_retype_prompt}')
-
         async for out in proc.stdout:
             output = out.decode('utf-8').rstrip()
             logger.debug(f'parsing: {parsing}, output: {output}')
             if output.startswith(msg_mnemonic_presentation):
                 parsing = True
-            elif output.startswith(msg_mnemonic_retype_prompt):
-                abbreviated_mnemonic = ' '.join(abbreviate_words(seed_phrase.split(' ')))
-                encoded_phrase = abbreviated_mnemonic.encode()
-                logger.debug(f'Writing: {abbreviated_mnemonic}')
-                proc.stdin.write(encoded_phrase)
-                logger.debug('Writing new line')
-                proc.stdin.write(b'\n')
+            elif output.endswith(msg_mnemonic_retype_prompt):
+                count += 1
+                if count == 2:
+                    abbreviated_mnemonic = ' '.join(abbreviate_words(seed_phrase.split(' ')))
+                    encoded_phrase = abbreviated_mnemonic.encode()
+                    logger.debug(f'Writing: {abbreviated_mnemonic}')
+                    proc.stdin.write(encoded_phrase)
+                    logger.debug('Writing new line')
+                    proc.stdin.write(b'\n')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
