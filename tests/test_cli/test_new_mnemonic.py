@@ -377,13 +377,16 @@ async def test_script_bls_withdrawal() -> None:
         assert len(seed_phrase) > 0
 
         logger.debug('Before proc.communicate()')
-        await proc.communicate()
+        stdout, stderr = await proc.communicate()
+        logger.debug(f'stdout: {stdout}, stderr: {stderr}')
         logger.debug('After proc.communicate()')
         proc.stdin.close()
         await proc.stdout.read()
         logger.debug('Before proc.wait()')
         await proc.wait()
         logger.debug('After proc.wait()')
+
+        logger.debug(f'proc.returncode: {proc.returncode}') 
 
         logger.debug(f'eof after last wait: {proc.stdout.at_eof()}')
 
@@ -471,13 +474,16 @@ async def test_script_abbreviated_mnemonic() -> None:
         assert len(seed_phrase) > 0
 
         logger.debug('Before proc.communicate()')
-        await proc.communicate()
+        stdout, stderr = await proc.communicate()
+        logger.debug(f'stdout: {stdout}, stderr: {stderr}')
         logger.debug('After proc.communicate()')
         proc.stdin.close()
         await proc.stdout.read()
         logger.debug('Before proc.wait()')
         await proc.wait()
         logger.debug('After proc.wait()')
+
+        logger.debug(f'proc.returncode: {proc.returncode}') 
 
         logger.debug(f'eof after last wait: {proc.stdout.at_eof()}')
 
