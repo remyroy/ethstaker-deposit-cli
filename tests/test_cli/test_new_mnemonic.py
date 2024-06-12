@@ -368,7 +368,9 @@ async def test_script_bls_withdrawal() -> None:
                 logger.debug(f'Writing: {seed_phrase}')
                 proc.stdin.write(encoded_phrase + b'\n')
                 input_prompt = False
+                logger.debug(f'eof before sleep: {proc.stdout.at_eof()}')
                 await asyncio.sleep(5)
+                logger.debug(f'eof after sleep: {proc.stdout.at_eof()}')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
@@ -376,7 +378,7 @@ async def test_script_bls_withdrawal() -> None:
                     proc.stdin.write(b'\n')
                     parsing = False
 
-        logger.debug(f'eof: {proc.stdout.at_eof()}')
+        logger.debug(f'eof after loop: {proc.stdout.at_eof()}')
 
         assert len(seed_phrase) > 0
 
@@ -389,7 +391,7 @@ async def test_script_bls_withdrawal() -> None:
         await proc.wait()
         logger.debug('After proc.wait()')
 
-        logger.debug(f'eof: {proc.stdout.at_eof()}')
+        logger.debug(f'eof after last wait: {proc.stdout.at_eof()}')
 
         # Check files
         validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
@@ -466,7 +468,9 @@ async def test_script_abbreviated_mnemonic() -> None:
                 logger.debug(f'Writing: {abbreviated_mnemonic}')
                 proc.stdin.write(encoded_phrase + b'\n')
                 input_prompt = False
+                logger.debug(f'eof before sleep: {proc.stdout.at_eof()}')
                 await asyncio.sleep(5)
+                logger.debug(f'eof after sleep: {proc.stdout.at_eof()}')
             elif parsing:
                 seed_phrase += output
                 if len(seed_phrase) > 0:
@@ -474,7 +478,7 @@ async def test_script_abbreviated_mnemonic() -> None:
                     proc.stdin.write(b'\n')
                     parsing = False
         
-        logger.debug(f'eof: {proc.stdout.at_eof()}')
+        logger.debug(f'eof after loop: {proc.stdout.at_eof()}')
 
         assert len(seed_phrase) > 0
 
@@ -487,7 +491,7 @@ async def test_script_abbreviated_mnemonic() -> None:
         await proc.wait()
         logger.debug('After proc.wait()')
 
-        logger.debug(f'eof: {proc.stdout.at_eof()}')
+        logger.debug(f'eof after last wait: {proc.stdout.at_eof()}')
 
         # Check files
         validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
