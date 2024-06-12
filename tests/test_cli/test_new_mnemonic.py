@@ -348,12 +348,19 @@ async def test_script_bls_withdrawal() -> None:
         parsing = False
         mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/',
                                           'new_mnemonic.json')
+
+        msg_mnemonic_presentation = load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')
+        msg_mnemonic_retype_prompt = load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')
+
+        logger.debug(f'msg_mnemonic_presentation: {msg_mnemonic_presentation}')
+        logger.debug(f'msg_mnemonic_retype_prompt: {msg_mnemonic_retype_prompt}')
+
         async for out in proc.stdout:
             output = out.decode('utf-8').rstrip()
-            logger.debug(f'Output: {output}')
-            if output.startswith(load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')):
+            logger.debug(f'parsing: {parsing}, output: {output}')
+            if output.startswith(msg_mnemonic_presentation):
                 parsing = True
-            elif output.startswith(load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')):
+            elif output.startswith(msg_mnemonic_retype_prompt):
                 parsing = False
             elif parsing:
                 seed_phrase += output
@@ -429,12 +436,19 @@ async def test_script_abbreviated_mnemonic() -> None:
         parsing = False
         mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/',
                                           'new_mnemonic.json')
+        
+        msg_mnemonic_presentation = load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')
+        msg_mnemonic_retype_prompt = load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')
+
+        logger.debug(f'msg_mnemonic_presentation: {msg_mnemonic_presentation}')
+        logger.debug(f'msg_mnemonic_retype_prompt: {msg_mnemonic_retype_prompt}')
+
         async for out in proc.stdout:
             output = out.decode('utf-8').rstrip()
-            logger.debug(f'Output: {output}')
-            if output.startswith(load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')):
+            logger.debug(f'parsing: {parsing}, output: {output}')
+            if output.startswith(msg_mnemonic_presentation):
                 parsing = True
-            elif output.startswith(load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')):
+            elif output.startswith(msg_mnemonic_retype_prompt):
                 parsing = False
             elif parsing:
                 seed_phrase += output
