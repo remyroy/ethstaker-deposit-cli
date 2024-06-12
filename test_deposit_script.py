@@ -63,7 +63,7 @@ async def main():
 
         assert len(seed_phrase) > 0
 
-        await proc.wait()
+        await proc.communicate()
 
 
 if os.name == 'nt':  # Windows

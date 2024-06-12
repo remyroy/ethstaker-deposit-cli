@@ -370,7 +370,7 @@ async def test_script_bls_withdrawal() -> None:
 
         assert len(seed_phrase) > 0
 
-        await proc.wait()
+        await proc.communicate()
 
         # Check files
         validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
@@ -453,7 +453,7 @@ async def test_script_abbreviated_mnemonic() -> None:
 
         assert len(seed_phrase) > 0
 
-        await proc.wait()
+        await proc.communicate()
 
         # Check files
         validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
