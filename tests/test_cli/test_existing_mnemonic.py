@@ -23,7 +23,9 @@ def test_existing_mnemonic_bls_withdrawal() -> None:
     inputs = [
         'TREZOR',
         'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-        '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword']
+        '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword',
+        '',
+    ]
     data = '\n'.join(inputs)
     arguments = [
         '--language', 'english',
@@ -68,7 +70,9 @@ def test_existing_mnemonic_eth1_address_withdrawal() -> None:
     inputs = [
         'TREZOR',
         'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-        '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword', eth1_withdrawal_address, eth1_withdrawal_address]
+        '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword', eth1_withdrawal_address, eth1_withdrawal_address,
+        '',
+    ]
     data = '\n'.join(inputs)
     arguments = [
         '--language', 'english',
@@ -126,7 +130,8 @@ def test_existing_mnemonic_eth1_address_withdrawal_bad_checksum() -> None:
         'TREZOR',
         'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
         '2', '2', '5', 'mainnet', 'MyPassword', 'MyPassword',
-        wrong_eth1_withdrawal_address, correct_eth1_withdrawal_address, correct_eth1_withdrawal_address
+        wrong_eth1_withdrawal_address, correct_eth1_withdrawal_address, correct_eth1_withdrawal_address,
+        '',
     ]
     data = '\n'.join(inputs)
     arguments = [
@@ -185,10 +190,12 @@ def test_pbkdf2_new_mnemonic() -> None:
     inputs = [
         'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
         '0', '0', '1', 'mainnet', 'MyPassword', 'MyPassword',
+        '',
     ]
     data = '\n'.join(inputs)
     arguments = [
         '--language', 'english',
+        '--ignore_connectivity',
         'existing-mnemonic',
         '--eth1_withdrawal_address', '',
         '--folder', pbkdf2_folder_path,
@@ -199,6 +206,7 @@ def test_pbkdf2_new_mnemonic() -> None:
 
     arguments = [
         '--language', 'english',
+        '--ignore_connectivity',
         'existing-mnemonic',
         '--eth1_withdrawal_address', '',
         '--folder', scrypt_folder_path,

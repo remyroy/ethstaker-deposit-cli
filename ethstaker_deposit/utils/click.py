@@ -98,7 +98,8 @@ def captive_prompt_callback(
             try:
                 processed_input = processing_func(user_input)
                 # Logic for confirming user input:
-                if confirmation_prompt is not None and processed_input not in ('', None):
+                after_type_conversion = param.name in ctx._parameter_source
+                if confirmation_prompt is not None and processed_input not in ('', None) and after_type_conversion:
                     confirmation_input = click.prompt(confirmation_prompt(), hide_input=hide_input)
                     if processing_func(confirmation_input) != processed_input:
                         raise ValidationError(confirmation_mismatch_msg())
