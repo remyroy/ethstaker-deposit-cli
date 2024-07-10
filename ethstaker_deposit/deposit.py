@@ -2,6 +2,7 @@ import click
 import socket
 import sys
 from multiprocessing import freeze_support
+from typing import List
 
 from ethstaker_deposit.cli.existing_mnemonic import existing_mnemonic
 from ethstaker_deposit.cli.exit_transaction_keystore import exit_transaction_keystore
@@ -44,7 +45,23 @@ def check_connectivity() -> None:
         return None
 
 
-@click.group()
+# Commands available in the CLI in this order
+sorted_commands = [
+    new_mnemonic,
+    existing_mnemonic,
+    generate_bls_to_execution_change,
+    exit_transaction_keystore,
+    exit_transaction_mnemonic,
+]
+
+
+class SortedGroup(click.Group):
+
+    def list_commands(self, ctx: click.Context) -> List[str]:
+        return [x.name for x in sorted_commands]
+
+
+@click.group(commands=sorted_commands, cls=SortedGroup)
 @click.pass_context
 @jit_option(
     '--language',
@@ -83,13 +100,6 @@ def cli(ctx: click.Context, language: str, non_interactive: bool, ignore_connect
         check_connectivity()
     config.language = language
     config.non_interactive = non_interactive  # Remove interactive commands
-
-
-cli.add_command(existing_mnemonic)
-cli.add_command(new_mnemonic)
-cli.add_command(generate_bls_to_execution_change)
-cli.add_command(exit_transaction_keystore)
-cli.add_command(exit_transaction_mnemonic)
 
 
 def run() -> None:

@@ -112,6 +112,7 @@ def exit_transaction_mnemonic(
 
     # We are not using CredentialList because from_mnemonic assumes key generation flow
     credentials = []
+    bar: click._termui_impl.ProgressBar[int]
     with click.progressbar(length=num_keys, label=load_text(['msg_key_creation']),
                            show_percent=False, show_pos=True) as bar:
 

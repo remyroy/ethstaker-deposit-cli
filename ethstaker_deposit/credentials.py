@@ -279,6 +279,7 @@ class CredentialList:
         key_indices = range(start_index, start_index + num_keys)
 
         credentials: List[Credential] = []
+        bar: click._termui_impl.ProgressBar[int]
         with click.progressbar(length=num_keys, label=load_text(['msg_key_creation']),
                                show_percent=False, show_pos=True) as bar:
             executor_kwargs = [{
@@ -299,6 +300,7 @@ class CredentialList:
 
     def export_keystores(self, password: str, folder: str) -> List[str]:
         filefolders: List[str] = []
+        bar: click._termui_impl.ProgressBar[int]
         with click.progressbar(length=len(self.credentials), label=load_text(['msg_keystore_creation']),
                                show_percent=False, show_pos=True) as bar:
             executor_kwargs = [{
@@ -315,6 +317,7 @@ class CredentialList:
 
     def export_deposit_data_json(self, folder: str) -> str:
         deposit_data = []
+        bar: click._termui_impl.ProgressBar[int]
         with click.progressbar(length=len(self.credentials), label=load_text(['msg_depositdata_creation']),
                                show_percent=False, show_pos=True) as bar:
 
@@ -332,6 +335,7 @@ class CredentialList:
 
     def verify_keystores(self, keystore_filefolders: List[str], password: str) -> bool:
         all_valid_keystores = True
+        bar: click._termui_impl.ProgressBar[int]
         with click.progressbar(length=len(self.credentials),
                                label=load_text(['msg_keystore_verification']),
                                show_percent=False, show_pos=True) as bar:
@@ -350,6 +354,7 @@ class CredentialList:
 
     def export_bls_to_execution_change_json(self, folder: str, validator_indices: Sequence[int]) -> str:
         bls_to_execution_changes = []
+        bar: click._termui_impl.ProgressBar[int]
         with click.progressbar(length=len(self.credentials), label=load_text(['msg_bls_to_execution_change_creation']),
                                show_percent=False, show_pos=True) as bar:
 

@@ -26,13 +26,11 @@ class JITOption(click.Option):
     def __init__(
         self,
         param_decls: Union[str, Sequence[str]],
-        default: Union[Callable[[], Any], None, Any] = None,
         help: Union[Callable[[], str], str, None] = None,
         prompt: Union[Callable[[], str], str, None] = None,
         **kwargs: Any,
     ):
 
-        self.callable_default = default
         self.callable_help = help
         self.callable_prompt = prompt
 
@@ -42,7 +40,6 @@ class JITOption(click.Option):
 
         return super().__init__(
             param_decls=param_decls,
-            default=_value_of(default),
             help=_value_of(help),
             prompt=_value_of(prompt),
             **kwargs,
@@ -52,13 +49,9 @@ class JITOption(click.Option):
         self.prompt = _value_of(self.callable_prompt)
         return super().prompt_for_value(ctx)
 
-    def get_help_record(self, ctx: click.Context) -> Tuple[str, str]:
+    def get_help_record(self, ctx: click.Context) -> Optional[Tuple[str, str]]:
         self.help = _value_of(self.callable_help)
         return super().get_help_record(ctx)
-
-    def get_default(self, ctx: click.Context) -> Any:
-        self.default = _value_of(self.callable_default)
-        return super().get_default(ctx)
 
 
 def jit_option(*args: Any, **kwargs: Any) -> Callable[[Any], Any]:
