@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ethstaker_deposit"]
+
+[project]
+name = "ethstaker_deposit"
+version = "0.1.3"
+description = "Secure key generation for deposits"
+readme = "README.md"
+dependencies = [
+    "click >=7.1.2,<8",
+    "eth-typing",
+    "eth-utils",
+    "pycryptodome",
+    "py-ecc",
+    "ssz"
+]
+requires-python = ">=3.9,<4"
+
+[project.optional-dependencies]
+test = [
+    "colorama",
+    "exceptiongroup",
+    "flake8",
+    "jsonschema",
+    "mypy",
+    "pytest",
+    "pytest-asyncio",
+    "tomli"
+]
+
+[project.scripts]
+deposit = "ethstaker_deposit.deposit:run"
+
+[project.urls]
+"Homepage" = "https://github.com/eth-educators/ethstaker-deposit-cli"

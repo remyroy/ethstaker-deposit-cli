@@ -317,12 +317,17 @@ python3 -V
 
 ##### Step 1. Installation
 
-For the [virtualenv](https://virtualenv.pypa.io/en/latest/) users, you can create a new venv:
+Install `venv` if not already installed, e.g. for Debian/Ubuntu:
 
 ```sh
-pip3 install virtualenv
-virtualenv venv
-source venv/bin/activate
+sudo apt update && sudo apt install python3-venv
+```
+
+Create a new [virtual environment](https://docs.python.org/3/library/venv.html):
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
 and install the dependencies:
@@ -561,12 +566,11 @@ python -V
 
 ##### Step 1. Installation
 
-For the [virtualenv](https://virtualenv.pypa.io/en/latest/) users, you can create a new venv:
+Create a new [virtual environment](https://docs.python.org/3/library/venv.html):
 
-```cmd
-pip3 install virtualenv
-virtualenv venv
-.\venv\Scripts\activate
+```sh
+python3 -m venv .venv
+.\.venv\Scripts\activate
 ```
 
 and install the dependencies:
