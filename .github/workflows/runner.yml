@@ -26,9 +26,52 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements_test.txt
+          pip install coverage
       - name: Run tests
-        run: pytest tests
+        run: |
+          coverage run --data-file=.coverage.${{ matrix.os }}.${{ matrix.python-version }} -m pytest tests
       - name: Run type checker
         run: python -m mypy --config-file mypy.ini -p ethstaker_deposit
       - name: Run linter
         run: flake8 --config=flake8.ini ./ethstaker_deposit ./tests
+      - name: Upload coverage data 
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}-${{ matrix.python-version }}
+          path: .coverage.${{ matrix.os }}.${{ matrix.python-version }}
+          retention-days: 1
+  coverage-combine:
+    needs: ci-runner
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download coverage data
+        uses: actions/download-artifact@v4
+      - name: Merge coverage data
+        id: merge
+        run: |
+          python -m pip install --upgrade pip
+          pip install coverage
+          coverage combine coverage*
+          coverage html
+      - name: Upload final coverage html report
+        uses: actions/upload-artifact@v4
+        id: upload-html
+        with:
+          name: coverage-html-report
+          path: htmlcov
+      - name: Generate text report
+        run: |
+          mkdir results
+          echo "Test Coverage: [Download HTML Report](${{ steps.upload-html.outputs.artifact-url }})" >> results/coverage-text-report
+          echo >> results/coverage-text-report
+          echo \`\`\` >> results/coverage-text-report
+          coverage report >> results/coverage-text-report
+          echo \`\`\` >> results/coverage-text-report
+          echo ${{ github.event.number }} > results/issue_number
+      - name: Upload final coverage text report
+        uses: actions/upload-artifact@v4
+        with:
+          name: results 
+          path: results/ 
