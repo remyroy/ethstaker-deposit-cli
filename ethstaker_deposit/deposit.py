@@ -26,7 +26,7 @@ from ethstaker_deposit.utils.intl import (
 
 def check_python_version() -> None:
     '''
-    Checks that the python version running is sufficient and exits if not..
+    Checks that the python version running is sufficient and exits if not
     '''
     if sys.version_info < (3, 9):
         click.pause(load_text(['err_python_version']))
