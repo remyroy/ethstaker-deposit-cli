@@ -3,7 +3,7 @@ from eth_utils import decode_hex
 
 import importlib.metadata
 
-DEPOSIT_CLI_VERSION = importlib.metadata.version('ethstaker-deposit')
+DEPOSIT_CLI_VERSION = importlib.metadata.version('ethstaker_deposit')
 
 
 class BaseChainSetting(NamedTuple):
