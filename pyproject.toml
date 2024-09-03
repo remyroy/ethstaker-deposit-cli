@@ -5,13 +5,15 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["ethstaker_deposit"]
 
+[tool.setuptools.dynamic]
+version = {attr = "ethstaker_deposit.__version__"}
+
 [tool.pip-tools]
 generate-hashes = true
 no-annotate = true
 
 [project]
 name = "ethstaker_deposit"
-version = "0.1.3.dev"
 description = "Secure key generation for deposits"
 readme = "README.md"
 dependencies = [
@@ -23,6 +25,7 @@ dependencies = [
     "ssz"
 ]
 requires-python = ">=3.9,<4"
+dynamic = ["version"]
 
 [project.optional-dependencies]
 test = [

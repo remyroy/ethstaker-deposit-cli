@@ -8,8 +8,6 @@ datas = [
 datas += copy_metadata('py_ecc')
 datas += copy_metadata('ssz')
 
-datas += copy_metadata('ethstaker_deposit')
-
 block_cipher = None
 
 

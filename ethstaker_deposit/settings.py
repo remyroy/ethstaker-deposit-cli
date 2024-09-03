@@ -1,9 +1,9 @@
 from typing import Dict, NamedTuple, Optional
 from eth_utils import decode_hex
 
-import importlib.metadata
+from ethstaker_deposit import __version__
 
-DEPOSIT_CLI_VERSION = importlib.metadata.version('ethstaker_deposit')
+DEPOSIT_CLI_VERSION = __version__
 
 
 class BaseChainSetting(NamedTuple):
