@@ -23,6 +23,9 @@ from ethstaker_deposit.utils.intl import (
     fuzzy_reverse_dict_lookup,
     load_text,
 )
+from ethstaker_deposit.settings import (
+    DEPOSIT_CLI_VERSION,
+)
 
 
 def check_python_version() -> None:
@@ -100,6 +103,7 @@ class SortedGroup(click.Group):
     ),
     hidden=False,
 )
+@click.version_option(version=DEPOSIT_CLI_VERSION)
 def cli(ctx: click.Context, language: str, non_interactive: bool, ignore_connectivity: bool) -> None:
     if not ignore_connectivity and not non_interactive:
         check_connectivity()
