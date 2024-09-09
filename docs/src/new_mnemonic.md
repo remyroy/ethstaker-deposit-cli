@@ -22,7 +22,7 @@ Generates a new BIP-39 mnemonic along with validator keystore and deposit files 
 - **`--folder`**: The folder where keystore and deposit data files will be saved.
 
 ## Output files
-A successful call to this command will result in one or many [keystore files](keystore_file.md) created, one per validator created, and one [deposit data file](deposit_data_file.md) created.
+A successful call to this command will result in one or many [keystore files](keystore_file.md) created, one per validator created, and one [deposit data file](deposit_data_file.md) created. The amount for each deposit in the deposit data file should always be 32 Ethers (`32000000000` in GWEI) with this command.
 
 ## Example Usage
 
