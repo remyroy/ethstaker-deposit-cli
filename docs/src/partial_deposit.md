@@ -20,6 +20,8 @@ If you wish to create a validator with 0x00 credentials, you must use the **[new
 
 - **`--output_folder`**: The folder path for the `deposit-*` JSON file.
 
+## Output file
+A successful call to this command will result in one [deposit data file](deposit_data_file.md) created.
 
 ## Example Usage
 

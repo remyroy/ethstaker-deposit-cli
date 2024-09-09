@@ -21,6 +21,9 @@ Generates a new BIP-39 mnemonic along with validator keystore and deposit files 
 
 - **`--folder`**: The folder where keystore and deposit data files will be saved.
 
+## Output files
+A successful call to this command will result in one or many [keystore files](keystore_file.md) created, one per validator created, and one [deposit data file](deposit_data_file.md) created.
+
 ## Example Usage
 
 ```sh
