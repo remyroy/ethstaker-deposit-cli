@@ -81,6 +81,7 @@ FUNC_NAME = 'generate_bls_to_execution_change'
             ALL_CHAIN_KEYS
         ),
         prompt_if_other_is_none='devnet_chain_setting',
+        default=MAINNET,
     ),
     default=MAINNET,
     help=lambda: load_text(['arg_chain', 'help'], func=FUNC_NAME),

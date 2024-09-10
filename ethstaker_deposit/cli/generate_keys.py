@@ -1,6 +1,7 @@
 import click
 import os
 import time
+import json
 from typing import (
     Any,
     Callable,
@@ -16,6 +17,7 @@ from ethstaker_deposit.utils.validation import (
     validate_int_range,
     validate_password_strength,
     validate_withdrawal_address,
+    validate_devnet_chain_setting,
 )
 from ethstaker_deposit.utils.constants import (
     DEFAULT_VALIDATOR_KEYS_FOLDER_NAME,
@@ -35,6 +37,7 @@ from ethstaker_deposit.settings import (
     MAINNET,
     ALL_CHAIN_KEYS,
     get_chain_setting,
+    get_devnet_chain_setting,
 )
 
 
@@ -66,15 +69,13 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
                     lambda: load_text(['chain', 'prompt'], func='generate_keys_arguments_decorator'),
                     ALL_CHAIN_KEYS
                 ),
+                prompt_if_other_is_none='devnet_chain_setting',
                 default=MAINNET,
             ),
             default=MAINNET,
             help=lambda: load_text(['chain', 'help'], func='generate_keys_arguments_decorator'),
             param_decls='--chain',
-            prompt=choice_prompt_func(
-                lambda: load_text(['chain', 'prompt'], func='generate_keys_arguments_decorator'),
-                ALL_CHAIN_KEYS
-            ),
+            prompt=False,  # the callback handles the prompt
         ),
         jit_option(
             callback=captive_prompt_callback(
@@ -110,6 +111,13 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
             param_decls='--pbkdf2',
             help=lambda: load_text(['arg_pbkdf2', 'help'], func='generate_keys_arguments_decorator'),
         ),
+        jit_option(
+            callback=validate_devnet_chain_setting,
+            default=None,
+            help=lambda: load_text(['arg_devnet_chain_setting', 'help'], func='generate_keys_arguments_decorator'),
+            param_decls='--devnet_chain_setting',
+            is_eager=True,
+        ),
     ]
     for decorator in reversed(decorators):
         function = decorator(function)
@@ -120,12 +128,26 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
 @click.pass_context
 def generate_keys(ctx: click.Context, validator_start_index: int,
                   num_validators: int, folder: str, chain: str, keystore_password: str,
-                  withdrawal_address: HexAddress, pbkdf2: bool, **kwargs: Any) -> None:
+                  withdrawal_address: HexAddress, pbkdf2: bool, devnet_chain_setting: str, **kwargs: Any) -> None:
     mnemonic = ctx.obj['mnemonic']
     mnemonic_password = ctx.obj['mnemonic_password']
     amounts = [MIN_ACTIVATION_AMOUNT] * num_validators
     folder = os.path.join(folder, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
-    chain_setting = get_chain_setting(chain)
+
+    # Get chain setting
+    if devnet_chain_setting is not None:
+        click.echo('\n%s\n' % load_text(['arg_devnet_chain_setting', 'warning'],
+                   func='generate_keys_arguments_decorator'))
+        devnet_chain_setting_dict = json.loads(devnet_chain_setting)
+        chain_setting = get_devnet_chain_setting(
+            network_name=devnet_chain_setting_dict['network_name'],
+            genesis_fork_version=devnet_chain_setting_dict['genesis_fork_version'],
+            exit_fork_version=devnet_chain_setting_dict['exit_fork_version'],
+            genesis_validator_root=devnet_chain_setting_dict.get('genesis_validator_root', None),
+        )
+    else:
+        chain_setting = get_chain_setting(chain)
+
     if not os.path.exists(folder):
         os.mkdir(folder)
     click.clear()
