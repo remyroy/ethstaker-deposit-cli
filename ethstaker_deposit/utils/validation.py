@@ -455,8 +455,18 @@ def validate_devnet_chain_setting_json(json_value: str) -> bool:
     try:
         devnet_chain_setting_dict = json.loads(json_value)
 
+        if not isinstance(devnet_chain_setting_dict, dict):
+            raise ValidationError(load_text(['err_devnet_chain_setting_not_object']) + '\n')
+
         required_keys = ('network_name', 'genesis_fork_version', 'exit_fork_version')
 
-        return all(key in devnet_chain_setting_dict for key in required_keys)
+        all_keys = all(key in devnet_chain_setting_dict for key in required_keys)
+
+        if not all_keys:
+            raise ValidationError(load_text(['err_devnet_chain_setting_missing_keys']) + '\n')
+
+        return all_keys
     except json.JSONDecodeError:
+        raise ValidationError(load_text(['err_devnet_chain_setting_invalid_json']) + '\n')
+
         return False
