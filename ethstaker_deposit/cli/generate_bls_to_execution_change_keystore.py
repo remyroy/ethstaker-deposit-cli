@@ -1,6 +1,7 @@
 import os
 import time
 import click
+import json
 from typing import Any
 
 from eth_typing import HexAddress
@@ -16,6 +17,7 @@ from ethstaker_deposit.utils.validation import (
     validate_int_range,
     validate_keystore_file,
     verify_bls_to_execution_change_keystore_json,
+    validate_devnet_chain_setting,
 )
 from ethstaker_deposit.utils.constants import (
     DEFAULT_BLS_TO_EXECUTION_CHANGES_KEYSTORE_FOLDER_NAME,
@@ -33,6 +35,7 @@ from ethstaker_deposit.settings import (
     MAINNET,
     ALL_CHAIN_KEYS,
     get_chain_setting,
+    get_devnet_chain_setting,
 )
 
 
@@ -49,14 +52,12 @@ FUNC_NAME = 'generate_bls_to_execution_change_keystore'
             lambda: load_text(['arg_chain', 'prompt'], func=FUNC_NAME),
             ALL_CHAIN_KEYS
         ),
+        prompt_if_other_is_none='devnet_chain_setting',
     ),
     default=MAINNET,
     help=lambda: load_text(['arg_chain', 'help'], func=FUNC_NAME),
     param_decls='--chain',
-    prompt=choice_prompt_func(
-        lambda: load_text(['arg_chain', 'prompt'], func=FUNC_NAME),
-        ALL_CHAIN_KEYS
-    ),
+    prompt=False,  # the callback handles the prompt
 )
 @jit_option(
     callback=captive_prompt_callback(
@@ -109,10 +110,11 @@ FUNC_NAME = 'generate_bls_to_execution_change_keystore'
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
 )
 @jit_option(
-    # Only for devnet tests
+    callback=validate_devnet_chain_setting,
     default=None,
-    help="[DEVNET ONLY] Set specific GENESIS_FORK_VERSION value",
+    help=lambda: load_text(['arg_devnet_chain_setting', 'help'], func=FUNC_NAME),
     param_decls='--devnet_chain_setting',
+    is_eager=True,
 )
 @click.pass_context
 def generate_bls_to_execution_change_keystore(
@@ -123,6 +125,7 @@ def generate_bls_to_execution_change_keystore(
         validator_index: int,
         withdrawal_address: HexAddress,
         output_folder: str,
+        devnet_chain_setting: str,
         **kwargs: Any) -> None:
     try:
         secret_bytes = keystore.decrypt(keystore_password)
@@ -131,10 +134,22 @@ def generate_bls_to_execution_change_keystore(
         exit(1)
 
     signing_key = int.from_bytes(secret_bytes, 'big')
-    chain_settings = get_chain_setting(chain)
+
+    # Get chain setting
+    if devnet_chain_setting is not None:
+        click.echo('\n%s\n' % load_text(['arg_devnet_chain_setting', 'warning'], func=FUNC_NAME))
+        devnet_chain_setting_dict = json.loads(devnet_chain_setting)
+        chain_setting = get_devnet_chain_setting(
+            network_name=devnet_chain_setting_dict['network_name'],
+            genesis_fork_version=devnet_chain_setting_dict['genesis_fork_version'],
+            exit_fork_version=devnet_chain_setting_dict['exit_fork_version'],
+            genesis_validator_root=devnet_chain_setting_dict.get('genesis_validator_root', None),
+        )
+    else:
+        chain_setting = get_chain_setting(chain)
 
     signed_btec = bls_to_execution_change_keystore_generation(
-        chain_settings=chain_settings,
+        chain_setting=chain_setting,
         signing_key=signing_key,
         validator_index=validator_index,
         execution_address=withdrawal_address,
@@ -150,7 +165,7 @@ def generate_bls_to_execution_change_keystore(
                                                                 timestamp=time.time())
 
     click.echo(load_text(['msg_verify_btec']))
-    if (not verify_bls_to_execution_change_keystore_json(saved_folder, keystore.pubkey, chain_settings)):
+    if (not verify_bls_to_execution_change_keystore_json(saved_folder, keystore.pubkey, chain_setting)):
         raise ValidationError(load_text(['err_verify_btec']))
 
     click.echo(load_text(['msg_creation_success']) + saved_folder)

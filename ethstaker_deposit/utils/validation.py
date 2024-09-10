@@ -4,7 +4,7 @@ import json
 import re
 import sys
 import concurrent.futures
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Sequence, Optional
 
 from eth_typing import (
     BLSPubkey,
@@ -433,3 +433,30 @@ def validate_bls_to_execution_change_keystore(validator_index: str,
 
     signing_root = compute_signing_root(message, domain)
     return bls.Verify(bls_pubkey, signing_root, bls_signature)
+
+
+#
+# Devnet Chain Setting Validation
+#
+
+def validate_devnet_chain_setting(ctx: click.Context, param: Any, value: Optional[str]) -> Optional[str]:
+    if value is None:
+        return None
+
+    trimmed_value = value[:400]
+
+    if validate_devnet_chain_setting_json(trimmed_value):
+        return trimmed_value
+    else:
+        raise ValidationError(load_text(['err_invalid_devnet_chain_setting']) + '\n')
+
+
+def validate_devnet_chain_setting_json(json_value: str) -> bool:
+    try:
+        devnet_chain_setting_dict = json.loads(json_value)
+
+        required_keys = ('network_name', 'genesis_fork_version', 'exit_fork_version')
+
+        return all(key in devnet_chain_setting_dict for key in required_keys)
+    except json.JSONDecodeError:
+        return False

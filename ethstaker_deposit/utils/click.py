@@ -92,6 +92,7 @@ def captive_prompt_callback(
     hide_input: bool = False,
     default: Optional[Union[Callable[[], str], str]] = None,
     prompt_if_none: bool = False,
+    prompt_if_other_is_none: Optional[str] = None,
 ) -> Callable[[click.Context, str, str], Any]:
     '''
     Traps the user in a prompt until the value chosen is acceptable
@@ -103,6 +104,9 @@ def captive_prompt_callback(
     :param hide_input: bool, hides the input as the user types
     :param default: the optional callable that returns a str or a str to be used as the default value if nothing is
     entered by the user
+    :param prompt_if_none: bool, prompt if the source of the parameter is from the default value and it's none
+    :param prompt_if_other_is_none: the optional str of the other parameter to check. prompt if the source of the
+    parameter is from the default value and the value of that other parameter is none
     '''
     def callback(ctx: click.Context, param: Any, user_input: str) -> Any:
         # the callback is called twice, once for the option prompt and once to verify the input
@@ -110,6 +114,10 @@ def captive_prompt_callback(
         # the callback
         # See https://github.com/pallets/click/discussions/2673
         if (prompt_if_none and param.prompt is None
+                and ctx.get_parameter_source(param.name) == click.core.ParameterSource.DEFAULT):
+            user_input = click.prompt(prompt(), hide_input=hide_input, default=_value_of(default))
+        elif (prompt_if_other_is_none is not None
+                and ctx.params.get(prompt_if_other_is_none, None) is None
                 and ctx.get_parameter_source(param.name) == click.core.ParameterSource.DEFAULT):
             user_input = click.prompt(prompt(), hide_input=hide_input, default=_value_of(default))
         if config.non_interactive:
