@@ -223,7 +223,7 @@ class Credential:
         signing_key = self.signing_sk
 
         signed_voluntary_exit = exit_transaction_generation(
-            chain_settings=self.chain_setting,
+            chain_setting=self.chain_setting,
             signing_key=signing_key,
             validator_index=validator_index,
             epoch=epoch

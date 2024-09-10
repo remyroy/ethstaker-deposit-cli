@@ -1,7 +1,8 @@
 import click
 import os
 import time
-from typing import Any
+import json
+from typing import Any, Optional
 
 from ethstaker_deposit.exceptions import ValidationError
 from ethstaker_deposit.utils.exit_transaction import exit_transaction_generation, export_exit_transaction_json
@@ -10,6 +11,7 @@ from ethstaker_deposit.settings import (
     MAINNET,
     ALL_CHAIN_KEYS,
     get_chain_setting,
+    get_devnet_chain_setting,
 )
 from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
@@ -21,7 +23,12 @@ from ethstaker_deposit.utils.intl import (
     closest_match,
     load_text,
 )
-from ethstaker_deposit.utils.validation import validate_int_range, validate_keystore_file, verify_signed_exit_json
+from ethstaker_deposit.utils.validation import (
+    validate_int_range,
+    validate_keystore_file,
+    verify_signed_exit_json,
+    validate_devnet_chain_setting,
+)
 
 
 FUNC_NAME = 'exit_transaction_keystore'
@@ -37,14 +44,13 @@ FUNC_NAME = 'exit_transaction_keystore'
             lambda: load_text(['arg_exit_transaction_keystore_chain', 'prompt'], func=FUNC_NAME),
             ALL_CHAIN_KEYS
         ),
+        prompt_if_other_is_none='devnet_chain_setting',
+        default=MAINNET,
     ),
     default=MAINNET,
     help=lambda: load_text(['arg_exit_transaction_keystore_chain', 'help'], func=FUNC_NAME),
     param_decls='--chain',
-    prompt=choice_prompt_func(
-        lambda: load_text(['arg_exit_transaction_keystore_chain', 'prompt'], func=FUNC_NAME),
-        ALL_CHAIN_KEYS
-    ),
+    prompt=False,  # the callback handles the prompt
 )
 @jit_option(
     callback=captive_prompt_callback(
@@ -89,6 +95,13 @@ FUNC_NAME = 'exit_transaction_keystore'
     param_decls='--output_folder',
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
 )
+@jit_option(
+    callback=validate_devnet_chain_setting,
+    default=None,
+    help=lambda: load_text(['arg_devnet_chain_setting', 'help'], func=FUNC_NAME),
+    param_decls='--devnet_chain_setting',
+    is_eager=True,
+)
 @click.pass_context
 def exit_transaction_keystore(
         ctx: click.Context,
@@ -98,6 +111,7 @@ def exit_transaction_keystore(
         validator_index: int,
         epoch: int,
         output_folder: str,
+        devnet_chain_setting: Optional[str],
         **kwargs: Any) -> None:
     try:
         secret_bytes = keystore.decrypt(keystore_password)
@@ -106,10 +120,22 @@ def exit_transaction_keystore(
         exit(1)
 
     signing_key = int.from_bytes(secret_bytes, 'big')
-    chain_settings = get_chain_setting(chain)
+
+    # Get chain setting
+    if devnet_chain_setting is not None:
+        click.echo('\n%s\n' % load_text(['arg_devnet_chain_setting', 'warning'], func=FUNC_NAME))
+        devnet_chain_setting_dict = json.loads(devnet_chain_setting)
+        chain_setting = get_devnet_chain_setting(
+            network_name=devnet_chain_setting_dict['network_name'],
+            genesis_fork_version=devnet_chain_setting_dict['genesis_fork_version'],
+            exit_fork_version=devnet_chain_setting_dict['exit_fork_version'],
+            genesis_validator_root=devnet_chain_setting_dict.get('genesis_validator_root', None),
+        )
+    else:
+        chain_setting = get_chain_setting(chain)
 
     signed_exit = exit_transaction_generation(
-        chain_settings=chain_settings,
+        chain_setting=chain_setting,
         signing_key=signing_key,
         validator_index=validator_index,
         epoch=epoch,
@@ -123,7 +149,7 @@ def exit_transaction_keystore(
     saved_folder = export_exit_transaction_json(folder=folder, signed_exit=signed_exit, timestamp=time.time())
 
     click.echo(load_text(['msg_verify_exit_transaction']))
-    if (not verify_signed_exit_json(saved_folder, keystore.pubkey, chain_settings)):
+    if (not verify_signed_exit_json(saved_folder, keystore.pubkey, chain_setting)):
         raise ValidationError(load_text(['err_verify_exit_transaction']))
 
     click.echo(load_text(['msg_creation_success']) + saved_folder)

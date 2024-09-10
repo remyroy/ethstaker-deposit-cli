@@ -366,19 +366,19 @@ def validate_keystore_file(file_path: str) -> Keystore:
     return saved_keystore
 
 
-def verify_signed_exit_json(file_folder: str, pubkey: str, chain_settings: BaseChainSetting) -> bool:
+def verify_signed_exit_json(file_folder: str, pubkey: str, chain_setting: BaseChainSetting) -> bool:
     with open(file_folder, 'r', encoding='utf-8') as f:
         deposit_json: SignedVoluntaryExit = json.load(f)
         signature = deposit_json["signature"]
         message = deposit_json["message"]
-        return validate_signed_exit(message["validator_index"], message["epoch"], signature, pubkey, chain_settings)
+        return validate_signed_exit(message["validator_index"], message["epoch"], signature, pubkey, chain_setting)
 
 
 def validate_signed_exit(validator_index: str,
                          epoch: str,
                          signature: str,
                          pubkey: str,
-                         chain_settings: BaseChainSetting) -> bool:
+                         chain_setting: BaseChainSetting) -> bool:
     bls_pubkey = BLSPubkey(bytes.fromhex(pubkey))
     bls_signature = BLSSignature(decode_hex(signature))
     message = VoluntaryExit(  # type: ignore[no-untyped-call]
@@ -387,8 +387,8 @@ def validate_signed_exit(validator_index: str,
     )
 
     domain = compute_voluntary_exit_domain(
-        fork_version=chain_settings.EXIT_FORK_VERSION,
-        genesis_validators_root=chain_settings.GENESIS_VALIDATORS_ROOT
+        fork_version=chain_setting.EXIT_FORK_VERSION,
+        genesis_validators_root=chain_setting.GENESIS_VALIDATORS_ROOT
     )
 
     signing_root = compute_signing_root(message, domain)
@@ -402,7 +402,7 @@ def validate_signed_exit(validator_index: str,
 
 def verify_bls_to_execution_change_keystore_json(file_folder: str,
                                                  pubkey: str,
-                                                 chain_settings: BaseChainSetting) -> bool:
+                                                 chain_setting: BaseChainSetting) -> bool:
     with open(file_folder, 'r', encoding='utf-8') as f:
         deposit_json: SignedBLSToExecutionChangeKeystore = json.load(f)
         signature = deposit_json["signature"]
@@ -411,14 +411,14 @@ def verify_bls_to_execution_change_keystore_json(file_folder: str,
                                                          message["to_execution_address"],
                                                          signature,
                                                          pubkey,
-                                                         chain_settings)
+                                                         chain_setting)
 
 
 def validate_bls_to_execution_change_keystore(validator_index: str,
                                               to_execution_address: str,
                                               signature: str,
                                               pubkey: str,
-                                              chain_settings: BaseChainSetting) -> bool:
+                                              chain_setting: BaseChainSetting) -> bool:
     bls_pubkey = BLSPubkey(bytes.fromhex(pubkey))
     bls_signature = BLSSignature(decode_hex(signature))
     message = BLSToExecutionChangeKeystore(  # type: ignore[no-untyped-call]
@@ -427,8 +427,8 @@ def validate_bls_to_execution_change_keystore(validator_index: str,
     )
 
     domain = compute_bls_to_execution_change_keystore_domain(
-        fork_version=chain_settings.GENESIS_FORK_VERSION,
-        genesis_validators_root=chain_settings.GENESIS_VALIDATORS_ROOT
+        fork_version=chain_setting.GENESIS_FORK_VERSION,
+        genesis_validators_root=chain_setting.GENESIS_VALIDATORS_ROOT
     )
 
     signing_root = compute_signing_root(message, domain)

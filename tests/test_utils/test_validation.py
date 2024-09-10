@@ -154,6 +154,6 @@ invalid_signature = (
 def test_validate_signed_exit(
     chain: str, epoch: int, validator_index: int, pubkey: str, signature: str, result: bool
 ) -> None:
-    chain_settings = get_chain_setting(chain)
+    chain_setting = get_chain_setting(chain)
 
-    assert validate_signed_exit(validator_index, epoch, signature, pubkey, chain_settings) == result
+    assert validate_signed_exit(validator_index, epoch, signature, pubkey, chain_setting) == result

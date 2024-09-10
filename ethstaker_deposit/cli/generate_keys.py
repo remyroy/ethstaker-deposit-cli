@@ -5,6 +5,7 @@ import json
 from typing import (
     Any,
     Callable,
+    Optional,
 )
 
 from eth_typing import HexAddress
@@ -128,7 +129,8 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
 @click.pass_context
 def generate_keys(ctx: click.Context, validator_start_index: int,
                   num_validators: int, folder: str, chain: str, keystore_password: str,
-                  withdrawal_address: HexAddress, pbkdf2: bool, devnet_chain_setting: str, **kwargs: Any) -> None:
+                  withdrawal_address: HexAddress, pbkdf2: bool,
+                  devnet_chain_setting: Optional[str], **kwargs: Any) -> None:
     mnemonic = ctx.obj['mnemonic']
     mnemonic_password = ctx.obj['mnemonic_password']
     amounts = [MIN_ACTIVATION_AMOUNT] * num_validators

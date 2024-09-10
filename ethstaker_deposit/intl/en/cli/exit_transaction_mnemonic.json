@@ -21,6 +21,10 @@
       "arg_exit_transaction_mnemonic_output_folder": {
           "help": "The folder path where the exit transactions will be saved to. Pointing to `./exit_transactions` by default."
       },
+      "arg_devnet_chain_setting": {
+          "help": "[DEVNET ONLY] Set a specific EXIT_FORK_VERSION and GENESIS_VALIDATORS_ROOT value. This should be a JSON string containing an object with the following keys: network_name, genesis_fork_version, exit_fork_version and genesis_validator_root. It should be similar to what you can find in settings.py. This will overwrite any selected chain.",
+          "warning": "**[Warning] Using devnet chain setting to generate the signed exit transaction file.**"
+      },
       "msg_key_creation": "Creating your keys:\t",
       "msg_exit_transaction_creation": "Creating your exit transactions:\t",
       "msg_verify_exit_transaction": "Verifying your exit transactions:\t",

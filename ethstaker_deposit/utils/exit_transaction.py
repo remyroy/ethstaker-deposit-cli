@@ -13,7 +13,7 @@ from ethstaker_deposit.utils.ssz import (
 
 
 def exit_transaction_generation(
-        chain_settings: BaseChainSetting,
+        chain_setting: BaseChainSetting,
         signing_key: int,
         validator_index: int,
         epoch: int) -> SignedVoluntaryExit:
@@ -23,8 +23,8 @@ def exit_transaction_generation(
     )
 
     domain = compute_voluntary_exit_domain(
-        fork_version=chain_settings.EXIT_FORK_VERSION,
-        genesis_validators_root=chain_settings.GENESIS_VALIDATORS_ROOT
+        fork_version=chain_setting.EXIT_FORK_VERSION,
+        genesis_validators_root=chain_setting.GENESIS_VALIDATORS_ROOT
     )
 
     signing_root = compute_signing_root(message, domain)

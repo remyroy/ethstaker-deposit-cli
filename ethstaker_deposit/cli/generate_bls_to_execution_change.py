@@ -149,7 +149,7 @@ def generate_bls_to_execution_change(
         validator_indices: Sequence[int],
         bls_withdrawal_credentials_list: Sequence[bytes],
         withdrawal_address: HexAddress,
-        devnet_chain_setting: str,
+        devnet_chain_setting: Optional[str],
         **kwargs: Any) -> None:
     # Generate folder
     bls_to_execution_changes_folder = os.path.join(
