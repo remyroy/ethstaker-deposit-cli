@@ -6,7 +6,7 @@ import time
 from eth_typing import HexAddress
 from eth_utils import to_canonical_address
 from py_ecc.bls import G2ProofOfPossession as bls
-from typing import Any
+from typing import Any, Optional
 
 from ethstaker_deposit.key_handling.keystore import Keystore
 from ethstaker_deposit.settings import (
@@ -14,6 +14,7 @@ from ethstaker_deposit.settings import (
     MAINNET,
     ALL_CHAIN_KEYS,
     get_chain_setting,
+    get_devnet_chain_setting,
 )
 from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
@@ -37,6 +38,7 @@ from ethstaker_deposit.utils.validation import (
     validate_keystore_file,
     validate_partial_deposit_amount,
     validate_withdrawal_address,
+    validate_devnet_chain_setting,
 )
 
 
@@ -53,14 +55,13 @@ FUNC_NAME = 'partial_deposit'
             lambda: load_text(['arg_partial_deposit_chain', 'prompt'], func=FUNC_NAME),
             ALL_CHAIN_KEYS
         ),
+        prompt_if_other_is_none='devnet_chain_setting',
+        default=MAINNET,
     ),
     default=MAINNET,
     help=lambda: load_text(['arg_partial_deposit_chain', 'help'], func=FUNC_NAME),
     param_decls='--chain',
-    prompt=choice_prompt_func(
-        lambda: load_text(['arg_partial_deposit_chain', 'prompt'], func=FUNC_NAME),
-        ALL_CHAIN_KEYS
-    ),
+    prompt=False,  # the callback handles the prompt
 )
 @jit_option(
     callback=captive_prompt_callback(
@@ -115,6 +116,13 @@ FUNC_NAME = 'partial_deposit'
     param_decls='--output_folder',
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
 )
+@jit_option(
+    callback=validate_devnet_chain_setting,
+    default=None,
+    help=lambda: load_text(['arg_devnet_chain_setting', 'help'], func=FUNC_NAME),
+    param_decls='--devnet_chain_setting',
+    is_eager=True,
+)
 @click.pass_context
 def partial_deposit(
         ctx: click.Context,
@@ -124,6 +132,7 @@ def partial_deposit(
         amount: int,
         withdrawal_address: HexAddress,
         output_folder: str,
+        devnet_chain_setting: Optional[str],
         **kwargs: Any) -> None:
     try:
         secret_bytes = keystore.decrypt(keystore_password)
@@ -132,7 +141,19 @@ def partial_deposit(
         exit(1)
 
     signing_key = int.from_bytes(secret_bytes, 'big')
-    chain_settings = get_chain_setting(chain)
+
+    # Get chain setting
+    if devnet_chain_setting is not None:
+        click.echo('\n%s\n' % load_text(['arg_devnet_chain_setting', 'warning'], func=FUNC_NAME))
+        devnet_chain_setting_dict = json.loads(devnet_chain_setting)
+        chain_setting = get_devnet_chain_setting(
+            network_name=devnet_chain_setting_dict['network_name'],
+            genesis_fork_version=devnet_chain_setting_dict['genesis_fork_version'],
+            exit_fork_version=devnet_chain_setting_dict['exit_fork_version'],
+            genesis_validator_root=devnet_chain_setting_dict.get('genesis_validator_root', None),
+        )
+    else:
+        chain_setting = get_chain_setting(chain)
 
     withdrawal_credentials = EXECUTION_ADDRESS_WITHDRAWAL_PREFIX
     withdrawal_credentials += b'\x00' * 11
@@ -144,7 +165,7 @@ def partial_deposit(
         amount=amount
     )
 
-    domain = compute_deposit_domain(fork_version=chain_settings.GENESIS_FORK_VERSION)
+    domain = compute_deposit_domain(fork_version=chain_setting.GENESIS_FORK_VERSION)
 
     signing_root = compute_signing_root(deposit_message, domain)
     signature = bls.Sign(signing_key, signing_root)
@@ -162,8 +183,8 @@ def partial_deposit(
     deposit_data = signed_deposit.as_dict()  # type: ignore[no-untyped-call]
     deposit_data.update({'deposit_message_root': deposit_message.hash_tree_root})
     deposit_data.update({'deposit_data_root': signed_deposit.hash_tree_root})
-    deposit_data.update({'fork_version': chain_settings.GENESIS_FORK_VERSION})
-    deposit_data.update({'network_name': chain_settings.NETWORK_NAME})
+    deposit_data.update({'fork_version': chain_setting.GENESIS_FORK_VERSION})
+    deposit_data.update({'network_name': chain_setting.NETWORK_NAME})
     deposit_data.update({'deposit_cli_version': DEPOSIT_CLI_VERSION})
     saved_folder = export_deposit_data_json(folder, time.time(), [deposit_data])
 
