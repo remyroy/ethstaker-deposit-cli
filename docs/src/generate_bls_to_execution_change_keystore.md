@@ -23,7 +23,7 @@ Signs a withdrawal credential update message using the provided keystore. This s
 
 - **`--output_folder`**: The folder path for the `bls_to_execution_change_keystore_signature-*` JSON file.
 
-- **`--devnet_chain_setting`**: The custom chain setting of a devnet or testnet. Note that it will override your `--chain` choice.
+- **`--devnet_chain_setting`**: The custom chain setting of a devnet or testnet. Note that it will override your `--chain` choice. This should be a JSON string containing an object with the following keys: network_name, genesis_fork_version, exit_fork_version and genesis_validator_root.
 
 ## Example Usage
 
