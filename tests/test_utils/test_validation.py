@@ -1,5 +1,6 @@
 import pytest
 import sys
+import json
 from typing import (
     Any,
 )
@@ -12,6 +13,7 @@ from ethstaker_deposit.utils.validation import (
     validate_partial_deposit_amount,
     validate_password_strength,
     validate_signed_exit,
+    validate_devnet_chain_setting_json,
 )
 
 
@@ -157,3 +159,52 @@ def test_validate_signed_exit(
     chain_setting = get_chain_setting(chain)
 
     assert validate_signed_exit(validator_index, epoch, signature, pubkey, chain_setting) == result
+
+
+def test_validate_devnet_chain_setting_json() -> None:
+    # Correct devnet chain value
+    corret_devnet_chain = {
+        "network_name": "holeskycopy",
+        "genesis_fork_version": "01017000",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
+    }
+
+    assert validate_devnet_chain_setting_json(json.dumps(corret_devnet_chain)) is True
+
+    # Invalid devnet chain value missing 1 required key
+    missing_1_key_devnet_chain = {
+        "network_name": "holeskycopy",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
+    }
+
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json(json.dumps(missing_1_key_devnet_chain)) is False
+
+    # Invalid devnet chain value missing 2 required key
+    missing_2_keys_devnet_chain = {
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
+    }
+
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json(json.dumps(missing_2_keys_devnet_chain)) is False
+
+    # Correct devnet chain value missing 1 optional key
+    correct_missing_genesis_validator_root_devnet_chain = {
+        "network_name": "holeskycopy",
+        "genesis_fork_version": "01017000",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
+    }
+
+    assert validate_devnet_chain_setting_json(json.dumps(correct_missing_genesis_validator_root_devnet_chain)) is True
+
+    # Invalid devnet chain with invalid JSON string
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json('aaz') is False
+
+    # Invalid devnet chain with missing root JSON object
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json('[1, 2, 3]') is False

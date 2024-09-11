@@ -9,7 +9,7 @@ from eth_utils import to_normalized_address
 
 from ethstaker_deposit.credentials import Credential
 from ethstaker_deposit.deposit import cli
-from ethstaker_deposit.settings import get_chain_setting
+from ethstaker_deposit.settings import get_chain_setting, get_devnet_chain_setting
 from ethstaker_deposit.utils.constants import (
     DEFAULT_PARTIAL_DEPOSIT_FOLDER_NAME,
     DEFAULT_VALIDATOR_KEYS_FOLDER_NAME,
@@ -221,4 +221,118 @@ def test_partial_deposit_does_not_match_if_amount_differs() -> None:
         assert get_permissions(partial_deposit_folder, partial_deposit_files[0]) == '0o440'
 
     clean_folder(my_folder_path, validator_key_folder, True)
+    clean_partial_deposit_folder(my_folder_path)
+
+
+@pytest.mark.parametrize(
+    'amount',
+    [
+        ("32"),
+        ("1"),
+    ]
+)
+def test_partial_deposit_custom_network(amount: str) -> None:
+    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
+    partial_deposit_folder = os.path.join(my_folder_path, DEFAULT_PARTIAL_DEPOSIT_FOLDER_NAME)
+    clean_partial_deposit_folder(my_folder_path)
+    if not os.path.exists(my_folder_path):
+        os.mkdir(my_folder_path)
+    if not os.path.exists(partial_deposit_folder):
+        os.mkdir(partial_deposit_folder)
+
+    devnet_chain = {
+        "network_name": "holeskycopy",
+        "genesis_fork_version": "01017000",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
+    }
+    devnet_chain_setting = json.dumps(devnet_chain)
+
+    password = "MyPasswordIs"
+    withdrawal_address = "0xcd60A5f152724480c3a95E4Ff4dacEEf4074854d"
+    mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+
+    credential = Credential(mnemonic=mnemonic,
+                            mnemonic_password="",
+                            index=0,
+                            amount=32000000000,
+                            chain_setting=get_devnet_chain_setting(**devnet_chain),
+                            hex_withdrawal_address=to_normalized_address(withdrawal_address))
+
+    keystore_file_folder = credential.save_signing_keystore(password, partial_deposit_folder, time.time())
+
+    runner = CliRunner()
+    inputs = ['english', password, amount, withdrawal_address, withdrawal_address]
+    data = '\n'.join(inputs)
+    arguments = [
+        '--ignore_connectivity',
+        'partial-deposit',
+        '--keystore', keystore_file_folder,
+        '--output_folder', my_folder_path,
+        '--devnet_chain_setting', devnet_chain_setting,
+    ]
+    result = runner.invoke(cli, arguments, input=data)
+    assert result.exit_code == 0
+
+    _, _, folder_files = next(os.walk(partial_deposit_folder))
+
+    deposit_files = [deposit_file for deposit_file in folder_files if deposit_file.startswith('deposit')]
+
+    assert len(deposit_files) == 1
+
+    if os.name == 'posix':
+        assert get_permissions(partial_deposit_folder, deposit_files[0]) == '0o440'
+
+    clean_partial_deposit_folder(my_folder_path)
+
+
+def test_invalid_custom_network_json() -> None:
+    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
+    partial_deposit_folder = os.path.join(my_folder_path, DEFAULT_PARTIAL_DEPOSIT_FOLDER_NAME)
+    clean_partial_deposit_folder(my_folder_path)
+    if not os.path.exists(my_folder_path):
+        os.mkdir(my_folder_path)
+    if not os.path.exists(partial_deposit_folder):
+        os.mkdir(partial_deposit_folder)
+
+    devnet_chain = {
+        "network_name": "holeskycopy",
+        "genesis_fork_version": "01017000",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
+    }
+    devnet_chain_setting = 'abcd'
+
+    password = "MyPasswordIs"
+    withdrawal_address = "0xcd60A5f152724480c3a95E4Ff4dacEEf4074854d"
+    mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+
+    credential = Credential(mnemonic=mnemonic,
+                            mnemonic_password="",
+                            index=0,
+                            amount=32000000000,
+                            chain_setting=get_devnet_chain_setting(**devnet_chain),
+                            hex_withdrawal_address=to_normalized_address(withdrawal_address))
+
+    keystore_file_folder = credential.save_signing_keystore(password, partial_deposit_folder, time.time())
+
+    runner = CliRunner()
+    inputs = ['english', password, '32', withdrawal_address, withdrawal_address]
+    data = '\n'.join(inputs)
+    arguments = [
+        '--ignore_connectivity',
+        'partial-deposit',
+        '--keystore', keystore_file_folder,
+        '--output_folder', my_folder_path,
+        '--devnet_chain_setting', devnet_chain_setting,
+    ]
+    result = runner.invoke(cli, arguments, input=data)
+    assert result.exit_code == 1
+
+    _, _, folder_files = next(os.walk(partial_deposit_folder))
+
+    deposit_files = [deposit_file for deposit_file in folder_files if deposit_file.startswith('deposit')]
+
+    assert len(deposit_files) == 0
+
     clean_partial_deposit_folder(my_folder_path)
