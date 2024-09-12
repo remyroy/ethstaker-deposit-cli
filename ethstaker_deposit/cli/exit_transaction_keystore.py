@@ -1,7 +1,6 @@
 import click
 import os
 import time
-import json
 from typing import Any, Optional
 
 from ethstaker_deposit.exceptions import ValidationError
@@ -11,7 +10,7 @@ from ethstaker_deposit.settings import (
     MAINNET,
     ALL_CHAIN_KEYS,
     get_chain_setting,
-    get_devnet_chain_setting,
+    BaseChainSetting,
 )
 from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
@@ -111,7 +110,7 @@ def exit_transaction_keystore(
         validator_index: int,
         epoch: int,
         output_folder: str,
-        devnet_chain_setting: Optional[str],
+        devnet_chain_setting: Optional[BaseChainSetting],
         **kwargs: Any) -> None:
     try:
         secret_bytes = keystore.decrypt(keystore_password)
@@ -122,17 +121,7 @@ def exit_transaction_keystore(
     signing_key = int.from_bytes(secret_bytes, 'big')
 
     # Get chain setting
-    if devnet_chain_setting is not None:
-        click.echo('\n%s\n' % load_text(['arg_devnet_chain_setting', 'warning'], func=FUNC_NAME))
-        devnet_chain_setting_dict = json.loads(devnet_chain_setting)
-        chain_setting = get_devnet_chain_setting(
-            network_name=devnet_chain_setting_dict['network_name'],
-            genesis_fork_version=devnet_chain_setting_dict['genesis_fork_version'],
-            exit_fork_version=devnet_chain_setting_dict['exit_fork_version'],
-            genesis_validator_root=devnet_chain_setting_dict.get('genesis_validator_root', None),
-        )
-    else:
-        chain_setting = get_chain_setting(chain)
+    chain_setting = devnet_chain_setting if devnet_chain_setting is not None else get_chain_setting(chain)
 
     signed_exit = exit_transaction_generation(
         chain_setting=chain_setting,

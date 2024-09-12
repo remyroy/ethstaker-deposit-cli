@@ -169,7 +169,6 @@ def test_validate_devnet_chain_setting_json() -> None:
         "exit_fork_version": "04017000",
         "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
     }
-
     assert validate_devnet_chain_setting_json(json.dumps(corret_devnet_chain)) is True
 
     # Invalid devnet chain value missing 1 required key
@@ -178,7 +177,6 @@ def test_validate_devnet_chain_setting_json() -> None:
         "exit_fork_version": "04017000",
         "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
     }
-
     with pytest.raises(ValidationError):
         assert validate_devnet_chain_setting_json(json.dumps(missing_1_key_devnet_chain)) is False
 
@@ -187,7 +185,6 @@ def test_validate_devnet_chain_setting_json() -> None:
         "exit_fork_version": "04017000",
         "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
     }
-
     with pytest.raises(ValidationError):
         assert validate_devnet_chain_setting_json(json.dumps(missing_2_keys_devnet_chain)) is False
 
@@ -195,11 +192,30 @@ def test_validate_devnet_chain_setting_json() -> None:
     correct_missing_genesis_validator_root_devnet_chain = {
         "network_name": "holeskycopy",
         "genesis_fork_version": "01017000",
-        "exit_fork_version": "04017000",
-        "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
+        "exit_fork_version": "04017000"
     }
-
     assert validate_devnet_chain_setting_json(json.dumps(correct_missing_genesis_validator_root_devnet_chain)) is True
+
+    # Invalid devnet chain value with wrong fourth key name
+    invalid_fourth_key_devnet_chain = {
+        "network_name": "holeskycopy",
+        "genesis_fork_version": "01017000",
+        "exit_fork_version": "04017000",
+        "genesis_validator": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1"
+    }
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json(json.dumps(invalid_fourth_key_devnet_chain)) is False
+
+    # Invalid devnet chain value with too many keys
+    invalid_too_many_keys_devnet_chain = {
+        "network_name": "holeskycopy",
+        "genesis_fork_version": "01017000",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "9143aa7c615a7f7115e2b6aac319c03529df8242ae705fba9df39b79c59fa8b1",
+        "more_key": "value"
+    }
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json(json.dumps(invalid_too_many_keys_devnet_chain)) is False
 
     # Invalid devnet chain with invalid JSON string
     with pytest.raises(ValidationError):

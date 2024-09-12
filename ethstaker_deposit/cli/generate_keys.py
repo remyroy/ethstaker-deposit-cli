@@ -1,7 +1,6 @@
 import click
 import os
 import time
-import json
 from typing import (
     Any,
     Callable,
@@ -38,7 +37,7 @@ from ethstaker_deposit.settings import (
     MAINNET,
     ALL_CHAIN_KEYS,
     get_chain_setting,
-    get_devnet_chain_setting,
+    BaseChainSetting,
 )
 
 
@@ -130,25 +129,14 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
 def generate_keys(ctx: click.Context, validator_start_index: int,
                   num_validators: int, folder: str, chain: str, keystore_password: str,
                   withdrawal_address: HexAddress, pbkdf2: bool,
-                  devnet_chain_setting: Optional[str], **kwargs: Any) -> None:
+                  devnet_chain_setting: Optional[BaseChainSetting], **kwargs: Any) -> None:
     mnemonic = ctx.obj['mnemonic']
     mnemonic_password = ctx.obj['mnemonic_password']
     amounts = [MIN_ACTIVATION_AMOUNT] * num_validators
     folder = os.path.join(folder, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
 
     # Get chain setting
-    if devnet_chain_setting is not None:
-        click.echo('\n%s\n' % load_text(['arg_devnet_chain_setting', 'warning'],
-                   func='generate_keys_arguments_decorator'))
-        devnet_chain_setting_dict = json.loads(devnet_chain_setting)
-        chain_setting = get_devnet_chain_setting(
-            network_name=devnet_chain_setting_dict['network_name'],
-            genesis_fork_version=devnet_chain_setting_dict['genesis_fork_version'],
-            exit_fork_version=devnet_chain_setting_dict['exit_fork_version'],
-            genesis_validator_root=devnet_chain_setting_dict.get('genesis_validator_root', None),
-        )
-    else:
-        chain_setting = get_chain_setting(chain)
+    chain_setting = devnet_chain_setting if devnet_chain_setting is not None else get_chain_setting(chain)
 
     if not os.path.exists(folder):
         os.mkdir(folder)

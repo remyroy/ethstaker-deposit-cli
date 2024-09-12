@@ -43,7 +43,7 @@ from ethstaker_deposit.utils.constants import (
     MAX_DEPOSIT_AMOUNT,
 )
 from ethstaker_deposit.utils.crypto import SHA256
-from ethstaker_deposit.settings import BaseChainSetting
+from ethstaker_deposit.settings import BaseChainSetting, get_devnet_chain_setting
 
 
 #
@@ -439,14 +439,24 @@ def validate_bls_to_execution_change_keystore(validator_index: str,
 # Devnet Chain Setting Validation
 #
 
-def validate_devnet_chain_setting(ctx: click.Context, param: Any, value: Optional[str]) -> Optional[str]:
+def validate_devnet_chain_setting(ctx: click.Context, param: Any, value: Optional[str]) -> Optional[BaseChainSetting]:
     if value is None:
         return None
 
+    # Trimming to protect against unnecessaryly large JSON payload, see https://docs.python.org/3/library/json.html
     trimmed_value = value[:400]
 
     if validate_devnet_chain_setting_json(trimmed_value):
-        return trimmed_value
+        click.echo('\n%s\n' % load_text(['arg_devnet_chain_setting_warning']))
+        devnet_chain_setting_dict = json.loads(trimmed_value)
+        chain_setting = get_devnet_chain_setting(
+            network_name=devnet_chain_setting_dict['network_name'],
+            genesis_fork_version=devnet_chain_setting_dict['genesis_fork_version'],
+            exit_fork_version=devnet_chain_setting_dict['exit_fork_version'],
+            genesis_validator_root=devnet_chain_setting_dict.get('genesis_validator_root', None),
+        )
+        click.echo(str(chain_setting) + '\n')
+        return chain_setting
     else:
         raise ValidationError(load_text(['err_invalid_devnet_chain_setting']) + '\n')
 
@@ -465,7 +475,13 @@ def validate_devnet_chain_setting_json(json_value: str) -> bool:
         if not all_keys:
             raise ValidationError(load_text(['err_devnet_chain_setting_missing_keys']) + '\n')
 
-        return all_keys
+        if len(devnet_chain_setting_dict) not in (3, 4):
+            raise ValidationError(load_text(['err_devnet_chain_setting_key_length']) + '\n')
+
+        if len(devnet_chain_setting_dict) == 4 and 'genesis_validator_root' not in devnet_chain_setting_dict:
+            raise ValidationError(load_text(['err_devnet_chain_setting_invalid_fourth_key']) + '\n')
+
+        return True
     except json.JSONDecodeError:
         raise ValidationError(load_text(['err_devnet_chain_setting_invalid_json']) + '\n')
 

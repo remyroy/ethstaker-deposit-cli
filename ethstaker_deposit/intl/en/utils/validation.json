@@ -46,11 +46,14 @@
         "err_invalid_keystore_file": "The discovered file is not the correct keystore file format. Please verify the provided path is to a keystore file and try again."
     },
     "validate_devnet_chain_setting": {
-        "err_invalid_devnet_chain_setting": "Invalid JSON string for devnet_chain_setting. It should be a valide JSON object that contains at least the following keys: network_name, genesis_fork_version and exit_fork_version."
+        "err_invalid_devnet_chain_setting": "Invalid JSON string for devnet_chain_setting. It should be a valide JSON object that contains at least the following keys: network_name, genesis_fork_version and exit_fork_version.",
+        "arg_devnet_chain_setting_warning": "**[Warning] Using devnet chain setting with this command.**"
     },
     "validate_devnet_chain_setting_json": {
         "err_devnet_chain_setting_not_object": "Invalid JSON string for devnet_chain_setting. The JSON string does not contain an object at root.",
         "err_devnet_chain_setting_missing_keys": "Invalid JSON string for devnet_chain_setting. It is missing one or more of these key in the root object: network_name, genesis_fork_version or exit_fork_version.",
-        "err_devnet_chain_setting_invalid_json": "Invalid JSON string for devnet_chain_setting. Decoding the JSON string was impossible. Make sure to pass a valid JSON string."
+        "err_devnet_chain_setting_invalid_json": "Invalid JSON string for devnet_chain_setting. Decoding the JSON string was impossible. Make sure to pass a valid JSON string.",
+        "err_devnet_chain_setting_key_length": "Invalid JSON string for devnet_chain_setting. The root object should only contain 3 or 4 keys.",
+        "err_devnet_chain_setting_invalid_fourth_key": "Invalid JSON string for devnet_chain_setting. The root object is missing the genesis_validator_root key."
     }
 }

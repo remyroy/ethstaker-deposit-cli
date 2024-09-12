@@ -1,6 +1,5 @@
 import os
 import click
-import json
 import concurrent.futures
 from typing import (
     Any,
@@ -43,7 +42,7 @@ from ethstaker_deposit.settings import (
     MAINNET,
     ALL_CHAIN_KEYS,
     get_chain_setting,
-    get_devnet_chain_setting,
+    BaseChainSetting,
 )
 from .existing_mnemonic import (
     load_mnemonic_arguments_decorator,
@@ -149,7 +148,7 @@ def generate_bls_to_execution_change(
         validator_indices: Sequence[int],
         bls_withdrawal_credentials_list: Sequence[bytes],
         withdrawal_address: HexAddress,
-        devnet_chain_setting: Optional[str],
+        devnet_chain_setting: Optional[BaseChainSetting],
         **kwargs: Any) -> None:
     # Generate folder
     bls_to_execution_changes_folder = os.path.join(
@@ -160,17 +159,7 @@ def generate_bls_to_execution_change(
         os.mkdir(bls_to_execution_changes_folder)
 
     # Get chain setting
-    if devnet_chain_setting is not None:
-        click.echo('\n%s\n' % load_text(['arg_devnet_chain_setting', 'warning'], func=FUNC_NAME))
-        devnet_chain_setting_dict = json.loads(devnet_chain_setting)
-        chain_setting = get_devnet_chain_setting(
-            network_name=devnet_chain_setting_dict['network_name'],
-            genesis_fork_version=devnet_chain_setting_dict['genesis_fork_version'],
-            exit_fork_version=devnet_chain_setting_dict['exit_fork_version'],
-            genesis_validator_root=devnet_chain_setting_dict.get('genesis_validator_root', None),
-        )
-    else:
-        chain_setting = get_chain_setting(chain)
+    chain_setting = devnet_chain_setting if devnet_chain_setting is not None else get_chain_setting(chain)
 
     if len(validator_indices) != len(bls_withdrawal_credentials_list):
         raise ValueError(
