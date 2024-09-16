@@ -48,9 +48,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r build_configs/windows/requirements.txt
       - name: Build with build.spec (Linux amd64)
-        if: ${{ startsWith(matrix.os, 'ubuntu-') }}
+        if: ${{ startsWith(matrix.os, 'ubuntu-') && !contains(matrix.os, 'arm') }}
         run: |
           export BUILD_FILE_NAME=ethstaker_deposit-cli-${SHORT_SHA}-linux-amd64
+          echo "BUILD_FILE_NAME=${BUILD_FILE_NAME}" >> "$GITHUB_ENV"
+          mkdir ${BUILD_FILE_NAME}
+          pyinstaller --distpath ./${BUILD_FILE_NAME} ./build_configs/linux/build.spec
+      - name: Build with build.spec (Linux arm64)
+        if: ${{ startsWith(matrix.os, 'ubuntu-') && contains(matrix.os, 'arm') }}
+        run: |
+          export BUILD_FILE_NAME=ethstaker_deposit-cli-${SHORT_SHA}-linux-arm64
           echo "BUILD_FILE_NAME=${BUILD_FILE_NAME}" >> "$GITHUB_ENV"
           mkdir ${BUILD_FILE_NAME}
           pyinstaller --distpath ./${BUILD_FILE_NAME} ./build_configs/linux/build.spec
