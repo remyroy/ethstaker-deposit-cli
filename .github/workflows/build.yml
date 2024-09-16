@@ -1,6 +1,10 @@
 name: ci-build
 run-name: ${{ github.actor }} is running ci-build
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - v*
 jobs:
   ci-build:
     runs-on: ${{ matrix.os }}
