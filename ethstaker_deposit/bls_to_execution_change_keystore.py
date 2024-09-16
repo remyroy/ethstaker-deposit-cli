@@ -18,17 +18,17 @@ from ethstaker_deposit.utils.ssz import (
 def bls_to_execution_change_keystore_generation(
         chain_setting: BaseChainSetting,
         signing_key: int,
-        execution_address: HexAddress,
+        withdrawal_address: HexAddress,
         validator_index: int) -> SignedBLSToExecutionChangeKeystore:
-    if execution_address is None:
-        raise ValueError("The execution address should NOT be empty.")
+    if withdrawal_address is None:
+        raise ValueError("The withdrawal address should NOT be empty.")
     if chain_setting.GENESIS_VALIDATORS_ROOT is None:
         raise ValidationError("The genesis validators root should NOT be empty "
                               "for this chain to obtain the BLS to execution change.")
 
     message = BLSToExecutionChangeKeystore(  # type: ignore[no-untyped-call]
         validator_index=validator_index,
-        to_execution_address=to_canonical_address(execution_address),
+        to_execution_address=to_canonical_address(withdrawal_address),
     )
     domain = compute_bls_to_execution_change_keystore_domain(
         fork_version=chain_setting.GENESIS_FORK_VERSION,

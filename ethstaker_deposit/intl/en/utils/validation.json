@@ -14,10 +14,10 @@
         "err_invalid_choice": "That is not one of the valid choices. Please retype your choice."
     },
     "validate_withdrawal_address": {
-        "err_invalid_ECDSA_hex_addr": "The given execution address is not in hexadecimal encoded form.",
-        "err_invalid_ECDSA_hex_addr_checksum": "The given execution address is not in checksum form.",
+        "err_invalid_ECDSA_hex_addr": "The given withdrawal address is not in hexadecimal encoded form.",
+        "err_invalid_ECDSA_hex_addr_checksum": "The given withdrawal address is not in checksum form.",
         "err_missing_address": "An address must be provided",
-        "msg_ECDSA_hex_addr_withdrawal": "**[Warning] you are setting an execution address as your withdrawal address. Please ensure that you have control over this address.**"
+        "msg_ECDSA_hex_addr_withdrawal": "**[Warning] you are setting a withdrawal address. Please ensure that you have full control over this address.**"
     },
     "validate_partial_deposit_amount": {
         "err_invalid_amount": "Invalid amount provided. Please provide a value of at least 1 ether of how much you wish to deposit.",

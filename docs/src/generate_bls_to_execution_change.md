@@ -21,7 +21,7 @@ Generates a BLS to execution address change message. This is used to add a withd
 
 - **`--bls_withdrawal_credentials_list`**: A list of the old BLS withdrawal credentials of the given validator(s). It is for confirming you are using the correct keys. Split multiple items with whitespaces or commas.
 
-- **`--withdrawal_address`**: If this field is set and valid, the given Ethereum execution address will be used to create the withdrawal credentials. Otherwise it will generate withdrawal credentials with the mnemonic-derived withdrawal public key.
+- **`--withdrawal_address`**: The Ethereum address that will be used in withdrawal. It typically starts with '0x' followed by 40 hexadecimal characters. Please make sure you have full control over the address you choose here. Once you set a withdrawal address on chain, it cannot be changed.
 
 - **`--devnet_chain_setting`**: The custom chain setting of a devnet or testnet. Note that it will override your `--chain` choice. This should be a JSON string containing an object with the following keys: network_name, genesis_fork_version, exit_fork_version and genesis_validator_root.
 

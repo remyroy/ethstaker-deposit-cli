@@ -46,7 +46,7 @@ If there is a specific command you would like to understand more, please choose 
 
 - **[existing-mnemonic](existing_mnemonic.md)**: Provide a mnemonic to regenerate validator keys or create new ones.
 
-- **[generate-bls-to-execution-change](generate_bls_to_execution_change.md)**: Update your withdrawal credentials of existing validators. It is **required** to have the corresponding mnemonic.
+- **[generate-bls-to-execution-change](generate_bls_to_execution_change.md)**: Add a withdrawal address to a validator that does not currently have one. It is **required** to have the corresponding mnemonic.
 
 - **[generate-bls-to-execution-change-keystore](generate_bls_to_execution_change_keystore.md)**: Sign an update withdrawal credentials message using your validator keystore.
 

@@ -26,7 +26,7 @@
       "arg_withdrawal_address": {
           "help": "The withdrawal address of the validator. If you wish to create a validator with 0x00 credentials use the new-mnemonic or existing-mnemonic command.",
           "confirm": "Repeat the withdrawal address for confirmation.",
-          "prompt": "Please enter the 20-byte execution address withdrawal credentials of the validator. If you wish to create a validator with 0x00 credentials use the new-mnemonic or existing-mnemonic command."
+          "prompt": "Please enter the withdrawal address. If you wish to create a validator with 0x00 credentials use the new-mnemonic or existing-mnemonic command."
       },
       "arg_devnet_chain_setting": {
           "help": "[DEVNET ONLY] Set specific GENESIS_FORK_VERSION value. This should be a JSON string containing an object with the following keys: network_name, genesis_fork_version, exit_fork_version and genesis_validator_root. It should be similar to what you can find in settings.py. This will override any selected chain."

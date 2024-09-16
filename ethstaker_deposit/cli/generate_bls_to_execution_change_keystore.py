@@ -142,7 +142,7 @@ def generate_bls_to_execution_change_keystore(
         chain_setting=chain_setting,
         signing_key=signing_key,
         validator_index=validator_index,
-        execution_address=withdrawal_address,
+        withdrawal_address=withdrawal_address,
     )
 
     folder = os.path.join(output_folder, DEFAULT_BLS_TO_EXECUTION_CHANGES_KEYSTORE_FOLDER_NAME)

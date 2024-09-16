@@ -19,7 +19,7 @@ Signs a withdrawal credential update message using the provided keystore. This s
 
 - **`--validator_index`**: The validator index corresponding to the provided keystore.
 
-- **`--withdrawal_address`**: Ethereum execution address in hexadecimal encoded form that you wish to set as your withdrawal credentials.
+- **`--withdrawal_address`**: The Ethereum address that will be used in withdrawal. It typically starts with '0x' followed by 40 hexadecimal characters. Please make sure you have full control over the address you choose here. Once you set a withdrawal address on chain, it cannot be changed.
 
 - **`--output_folder`**: The folder path for the `bls_to_execution_change_keystore_signature-*` JSON file.
 
