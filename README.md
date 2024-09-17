@@ -723,7 +723,7 @@ pre-commit install
 ### Building Binaries
 **Developers Only**
 
-ethstaker-deposit uses `pyinstaller` to create binaries. The requirements are in `build_configs`. Look at `.circleci/config.yml` to see it in action.
+ethstaker-deposit uses `pyinstaller` to create binaries. The requirements are in `build_configs`. Look at `.github/workflows/build.yml` to see it in action.
 
 For example Linux, in your Python virtual environment:
 ```sh
