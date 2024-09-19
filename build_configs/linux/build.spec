@@ -22,10 +22,6 @@ a = Analysis(['../../ethstaker_deposit/deposit.py'],
              win_private_assemblies=False,
              cipher=block_cipher,
              noarchive=False)
-# Post-process a.binaries to exclude 'libtinfo.so.*' and 'libncursesw.so.*'
-a.binaries = [(dest, src, type) for (dest, src, type) in a.binaries
-              if 'libtinfo.so' not in dest and 'libncursesw.so' not in dest]
-
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
