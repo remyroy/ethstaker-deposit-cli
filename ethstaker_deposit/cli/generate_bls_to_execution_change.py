@@ -38,6 +38,7 @@ from ethstaker_deposit.utils.intl import (
     closest_match,
     load_text,
 )
+from ethstaker_deposit.utils import config
 from ethstaker_deposit.utils.terminal import clear_terminal
 from ethstaker_deposit.settings import (
     MAINNET,
@@ -213,4 +214,5 @@ def generate_bls_to_execution_change(
     click.echo(OWL_0)
     click.echo(load_text(['msg_creation_success']) + str(bls_to_execution_changes_folder))
 
-    click.pause(load_text(['msg_pause']))
+    if not config.non_interactive:
+        click.pause(load_text(['msg_pause']))

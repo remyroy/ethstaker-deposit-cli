@@ -13,6 +13,7 @@ from ethstaker_deposit.settings import (
     get_chain_setting,
     BaseChainSetting,
 )
+from ethstaker_deposit.utils import config
 from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     choice_prompt_func,
@@ -183,4 +184,5 @@ def exit_transaction_mnemonic(
                     raise ValidationError(load_text(['err_verify_exit_transactions']))
 
     click.echo(load_text(['msg_creation_success']) + folder)
-    click.pause(load_text(['msg_pause']))
+    if not config.non_interactive:
+        click.pause(load_text(['msg_pause']))

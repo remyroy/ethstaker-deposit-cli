@@ -2,6 +2,7 @@ import click
 from typing import Any
 
 from ethstaker_deposit.key_handling.keystore import Keystore
+from ethstaker_deposit.utils import config
 from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     jit_option,
@@ -56,4 +57,5 @@ def test_keystore(
         exit(1)
 
     click.echo(load_text(['msg_verification_success']))
-    click.pause(load_text(['msg_pause']))
+    if not config.non_interactive:
+        click.pause(load_text(['msg_pause']))

@@ -16,6 +16,7 @@ from ethstaker_deposit.settings import (
     get_chain_setting,
     BaseChainSetting,
 )
+from ethstaker_deposit.utils import config
 from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     choice_prompt_func,
@@ -188,4 +189,5 @@ def partial_deposit(
         return
 
     click.echo(load_text(['msg_creation_success']) + saved_folder)
-    click.pause(load_text(['msg_pause']))
+    if not config.non_interactive:
+        click.pause(load_text(['msg_pause']))

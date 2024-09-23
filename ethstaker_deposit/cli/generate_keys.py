@@ -12,6 +12,7 @@ from ethstaker_deposit.credentials import (
     CredentialList,
 )
 from ethstaker_deposit.exceptions import ValidationError
+from ethstaker_deposit.utils import config
 from ethstaker_deposit.utils.validation import (
     verify_deposit_data_json,
     validate_int_range,
@@ -164,4 +165,5 @@ def generate_keys(ctx: click.Context, validator_start_index: int,
     if not verify_deposit_data_json(deposits_file, credentials.credentials):
         raise ValidationError(load_text(['err_verify_deposit']))
     click.echo(load_text(['msg_creation_success']) + folder)
-    click.pause(load_text(['msg_pause']))
+    if not config.non_interactive:
+        click.pause(load_text(['msg_pause']))
