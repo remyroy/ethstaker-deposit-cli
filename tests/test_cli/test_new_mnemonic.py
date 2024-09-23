@@ -500,7 +500,6 @@ async def test_script_bls_withdrawal() -> None:
             if len(seed_phrase) > 0:
                 encoded_phrase = seed_phrase.encode()
                 proc.stdin.write(encoded_phrase)
-                proc.stdin.write(b'\n')
 
     assert len(seed_phrase) > 0
 
@@ -589,7 +588,6 @@ async def test_script_abbreviated_mnemonic() -> None:
                 abbreviated_mnemonic = ' '.join(abbreviate_words(seed_phrase.split(' ')))
                 encoded_phrase = abbreviated_mnemonic.encode()
                 proc.stdin.write(encoded_phrase)
-                proc.stdin.write(b'\n')
 
     assert len(seed_phrase) > 0
 

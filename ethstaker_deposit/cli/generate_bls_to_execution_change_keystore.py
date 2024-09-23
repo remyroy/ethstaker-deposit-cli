@@ -11,6 +11,7 @@ from ethstaker_deposit.bls_to_execution_change_keystore import (
 )
 from ethstaker_deposit.exceptions import ValidationError
 from ethstaker_deposit.key_handling.keystore import Keystore
+from ethstaker_deposit.utils import config
 from ethstaker_deposit.utils.validation import (
     validate_withdrawal_address,
     validate_int_range,
@@ -159,4 +160,5 @@ def generate_bls_to_execution_change_keystore(
         raise ValidationError(load_text(['err_verify_btec']))
 
     click.echo(load_text(['msg_creation_success']) + saved_folder)
-    click.pause(load_text(['msg_pause']))
+    if not config.non_interactive:
+        click.pause(load_text(['msg_pause']))
