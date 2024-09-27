@@ -494,12 +494,15 @@ async def test_script_bls_withdrawal() -> None:
         if output.startswith(load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')):
             parsing = True
         elif output.startswith(load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')):
-            parsing = False
+            proc.stdin.write(encoded_phrase)
+            proc.stdin.write(b'\n')
+        elif output.startswith(load_text(['msg_press_any_key'], mnemonic_json_file, 'new_mnemonic')):
+            proc.stdin.write(b'\n')
         elif parsing:
             seed_phrase += output
             if len(seed_phrase) > 0:
                 encoded_phrase = seed_phrase.encode()
-                proc.stdin.write(encoded_phrase)
+                parsing = False
 
     assert len(seed_phrase) > 0
 
@@ -581,13 +584,16 @@ async def test_script_abbreviated_mnemonic() -> None:
         if output.startswith(load_text(['msg_mnemonic_presentation'], mnemonic_json_file, 'new_mnemonic')):
             parsing = True
         elif output.startswith(load_text(['msg_mnemonic_retype_prompt'], mnemonic_json_file, 'new_mnemonic')):
-            parsing = False
+            proc.stdin.write(encoded_phrase)
+            proc.stdin.write(b'\n')
+        elif output.startswith(load_text(['msg_press_any_key'], mnemonic_json_file, 'new_mnemonic')):
+            proc.stdin.write(b'\n')
         elif parsing:
             seed_phrase += output
             if len(seed_phrase) > 0:
                 abbreviated_mnemonic = ' '.join(abbreviate_words(seed_phrase.split(' ')))
                 encoded_phrase = abbreviated_mnemonic.encode()
-                proc.stdin.write(encoded_phrase)
+                parsing = False
 
     assert len(seed_phrase) > 0
 
