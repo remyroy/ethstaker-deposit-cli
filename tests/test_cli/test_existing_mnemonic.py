@@ -396,3 +396,94 @@ def test_existing_mnemonic_custom_testnet() -> None:
             assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
     # Clean up
     clean_key_folder(my_folder_path)
+
+
+def test_existing_mnemonic_multiple_languages() -> None:
+    # Prepare folder
+    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
+    clean_key_folder(my_folder_path)
+    if not os.path.exists(my_folder_path):
+        os.mkdir(my_folder_path)
+
+    runner = CliRunner()
+    inputs = [
+        'TREZOR',
+        '的 的 的 的 的 的 的 的 的 的 的 在', '1',
+        '2', '2', '5', 'MyPasswordIs', 'MyPasswordIs']
+    data = '\n'.join(inputs)
+    arguments = [
+        '--language', 'english',
+        '--ignore_connectivity',
+        'existing-mnemonic',
+        '--chain', 'holesky',
+        '--withdrawal_address', '',
+        '--folder', my_folder_path,
+        '--mnemonic_password', 'TREZOR',
+    ]
+    result = runner.invoke(cli, arguments, input=data)
+
+    assert result.exit_code == 0
+
+    # Check files
+    validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+    _, _, key_files = next(os.walk(validator_keys_folder_path))
+
+    all_uuid = [
+        get_uuid(validator_keys_folder_path + '/' + key_file)
+        for key_file in key_files
+        if key_file.startswith('keystore')
+    ]
+    assert len(set(all_uuid)) == 5
+
+    # Verify file permissions
+    if os.name == 'posix':
+        for file_name in key_files:
+            assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
+    # Clean up
+    clean_key_folder(my_folder_path)
+
+
+def test_existing_mnemonic_multiple_languages_argument() -> None:
+    # Prepare folder
+    my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
+    clean_key_folder(my_folder_path)
+    if not os.path.exists(my_folder_path):
+        os.mkdir(my_folder_path)
+
+    runner = CliRunner()
+    inputs = [
+        'TREZOR',
+        '的 的 的 的 的 的 的 的 的 的 的 在',
+        '2', '2', '5', 'MyPasswordIs', 'MyPasswordIs']
+    data = '\n'.join(inputs)
+    arguments = [
+        '--language', 'english',
+        '--ignore_connectivity',
+        'existing-mnemonic',
+        '--chain', 'holesky',
+        '--withdrawal_address', '',
+        '--folder', my_folder_path,
+        '--mnemonic_language', '简体中文',
+        '--mnemonic_password', 'TREZOR',
+    ]
+    result = runner.invoke(cli, arguments, input=data)
+
+    assert result.exit_code == 0
+
+    # Check files
+    validator_keys_folder_path = os.path.join(my_folder_path, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
+    _, _, key_files = next(os.walk(validator_keys_folder_path))
+
+    all_uuid = [
+        get_uuid(validator_keys_folder_path + '/' + key_file)
+        for key_file in key_files
+        if key_file.startswith('keystore')
+    ]
+    assert len(set(all_uuid)) == 5
+
+    # Verify file permissions
+    if os.name == 'posix':
+        for file_name in key_files:
+            assert get_permissions(validator_keys_folder_path, file_name) == '0o440'
+    # Clean up
+    clean_key_folder(my_folder_path)

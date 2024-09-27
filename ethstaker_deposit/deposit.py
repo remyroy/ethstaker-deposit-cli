@@ -11,7 +11,7 @@ from ethstaker_deposit.cli.generate_bls_to_execution_change_keystore import gene
 from ethstaker_deposit.cli.new_mnemonic import new_mnemonic
 from ethstaker_deposit.cli.partial_deposit import partial_deposit
 from ethstaker_deposit.cli.test_keystore import test_keystore
-from ethstaker_deposit.exceptions import ValidationError
+from ethstaker_deposit.exceptions import MultiLanguageError, ValidationError
 from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     choice_prompt_func,
@@ -125,7 +125,7 @@ def run() -> None:
 
     try:
         cli()
-    except (ValueError, ValidationError) as e:
+    except (MultiLanguageError, ValueError, ValidationError) as e:
         click.echo(f"\nError: {e}\n", err=True)
         sys.exit(1)
 

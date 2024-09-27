@@ -6,6 +6,10 @@ import click
 
 
 def clear_terminal() -> None:
+    # Do not clear if running unit tests as stdout can be used to determine state
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        return
+
     # We bundle libtinfo via pyinstaller, which messes with the system tput.
     # Remove LD_LIBRARY_PATH just for subprocess.run()
     if sys.platform == 'linux':

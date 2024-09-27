@@ -51,7 +51,7 @@ languages = get_first_options(MNEMONIC_LANG_OPTIONS)
 def new_mnemonic(ctx: click.Context, mnemonic_language: str, **kwargs: Any) -> None:
     mnemonic = get_mnemonic(language=mnemonic_language, words_path=WORD_LISTS_PATH)
     test_mnemonic = ''
-    while mnemonic != reconstruct_mnemonic(test_mnemonic, WORD_LISTS_PATH):
+    while mnemonic != reconstruct_mnemonic(test_mnemonic, WORD_LISTS_PATH, mnemonic_language):
         clear_terminal()
         click.echo(load_text(['msg_mnemonic_presentation']))
         click.echo('\n\n%s\n\n' % mnemonic)

@@ -137,7 +137,9 @@ def captive_prompt_callback(
     return callback
 
 
-def choice_prompt_func(prompt_func: Callable[[], str], choices: Sequence[str]) -> Callable[[], str]:
+def choice_prompt_func(prompt_func: Callable[[], str],
+                       choices: Sequence[str],
+                       add_colon: bool = True) -> Callable[[], str]:
     '''
     Formats the prompt and choices in a printable manner.
     '''
@@ -152,7 +154,7 @@ def choice_prompt_func(prompt_func: Callable[[], str], choices: Sequence[str]) -
             else:
                 output = output + ', '
     output = output + ']'
-    return lambda: '%s %s: ' % (prompt_func(), output)
+    return lambda: '%s %s%s' % (prompt_func(), output, ': ' if add_colon else '')
 
 
 def deactivate_prompts_callback(param_names: list[str]) -> Callable[[click.Context, str, str], Any]:

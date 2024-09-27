@@ -11,6 +11,8 @@ Uses an existing BIP-39 mnemonic phrase for key generation.
 
 - **`--mnemonic`**: The mnemonic you used to create withdrawal credentials. <span class="warning"></span>
 
+- **`--mnemonic_language`**: The language of your mnemonic. If this is not provided we will attempt to determine it based on the mnemonic.
+
 - **`--mnemonic_password`**: The mnemonic password you used in your key generation. Note: It's not the keystore password. <span class="warning"></span>
 
 - **`--validator_start_index`**: The index of the first validator's keys you wish to generate. If this is your first time generating keys with this mnemonic, use 0. If you have generated keys using this mnemonic before, use the next index from which you want to start generating keys from. As an example if you've generated 4 keys before (keys #0, #1, #2, #3), then enter 4 here.

@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 from unicodedata import normalize
 from secrets import randbits
@@ -6,7 +7,7 @@ from typing import (
     Sequence,
 )
 
-from ethstaker_deposit.exceptions import ValidationError
+from ethstaker_deposit.exceptions import MultiLanguageError
 from ethstaker_deposit.utils.constants import (
     MNEMONIC_LANG_OPTIONS,
 )
@@ -64,14 +65,25 @@ def get_seed(*, mnemonic: str, password: str) -> bytes:
 def determine_mnemonic_language(mnemonic: str, words_path: str) -> Sequence[str]:
     """
     Given a `mnemonic` determine what language[s] it is written in.
-    There are collisions between word-lists, so multiple candidate languages are returned.
+    First create a map of every word in all supported languages and what languages those words belong to.
+    Then go through each word in the provided mnemonic and determine its potential languages.
+    Return a list of all potential languages.
     """
     languages = MNEMONIC_LANG_OPTIONS.keys()
-    word_language_map = {word: lang for lang in languages for word in _get_word_list(lang, words_path)}
+    word_language_map = defaultdict(list)
+    for lang, word in ((lang, word) for lang in languages for word in _get_word_list(lang, words_path)):
+        word_language_map[word].append(lang)
+
     try:
         mnemonic_list = [normalize('NFKC', word)[:4] for word in mnemonic.lower().split(' ')]
-        word_languages = [[lang for word, lang in word_language_map.items() if normalize('NFKC', word)[:4] == abbrev]
-                          for abbrev in mnemonic_list]
+        word_languages = [
+            [
+                lang for word, langs in word_language_map.items()
+                for lang in langs
+                if normalize('NFKC', word)[:4] == abbrev
+            ]
+            for abbrev in mnemonic_list
+        ]
         return list(set(sum(word_languages, [])))
     except KeyError:
         raise ValueError('Word not found in mnemonic word lists for any language.')
@@ -99,15 +111,16 @@ def abbreviate_words(words: Sequence[str]) -> list[str]:
     return [normalize('NFKC', word)[:4] for word in words]
 
 
-def reconstruct_mnemonic(mnemonic: str, words_path: str) -> Optional[str]:
+def reconstruct_mnemonic(mnemonic: str, words_path: str, language: Optional[str] = None) -> Optional[str]:
     """
     Given a mnemonic, a reconstructed the full version (incase the abbreviated words were used)
     then verify it against its own checksum
     """
     try:
-        languages = determine_mnemonic_language(mnemonic, words_path)
+        languages = [language] if language else determine_mnemonic_language(mnemonic, words_path)
     except ValueError:
         return None
+    valid_languages = []
     reconstructed_mnemonic = None
     for language in languages:
         try:
@@ -123,17 +136,17 @@ def reconstruct_mnemonic(mnemonic: str, words_path: str) -> Optional[str]:
             entropy_bits = entropy.to_bytes(checksum_length * 4, 'big')
             full_word_list = _get_word_list(language, words_path)
             if _get_checksum(entropy_bits) == checksum:
-                """
-                This check guarantees that only one language has a valid mnemonic.
-                It is needed to ensure abbrivated words aren't valid in multiple languages
-                """
-                if reconstructed_mnemonic is not None:
-                    raise ValidationError("This mnemonic abbreviated form is available in multiple languages.")
+                valid_languages.append(language)
                 reconstructed_mnemonic = ' '.join([_index_to_word(full_word_list, index) for index in word_indices])
             else:
                 pass
         except ValueError:
             pass
+
+    if len(valid_languages) > 1:
+        valid_languages = sorted(valid_languages, key=lambda x: list(MNEMONIC_LANG_OPTIONS.keys()).index(x))
+        raise MultiLanguageError(valid_languages)
+
     return reconstructed_mnemonic
 
 
