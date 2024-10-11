@@ -193,11 +193,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: assets/
-      - name: 'Create draft release'
+          pattern: binary-*
+      - name: Create draft release
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            var path = require('path');
+            var fs = require('fs');
+
             var tagName = '';
             if (context.eventName == 'push') {
               tagName = context.ref;
@@ -207,7 +211,9 @@ jobs:
               core.setFailed(`Unhandled triggering event.`);
             }
 
-            const release = await github.rest.repos.createRelease({
+            console.log('Creating draft release...')
+
+            const { data: release } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: tagName,
@@ -216,19 +222,20 @@ jobs:
               generate_release_notes: true,
             });
 
-            var path = require('path');
+            console.log(`Release ${release.id} created.`);
 
-            const globber = await glob.create('assets/*')
-            for await (const file of globber.globGenerator()) {
-              console.log(`Uploading ${file} to the release ${release.id}`);
+            console.log('Uploading release assets...');
+
+            const archivesGlobber = await glob.create('assets/*/*')
+            for await (const file of archivesGlobber.globGenerator()) {
+              console.log(`Uploading ${path.basename(file)} to the release ${release.id}`);
 
               await github.rest.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: release.id,
                 name: path.basename(file),
-                data: `@${file}`,
+                data: fs.readFileSync(file),
               });
             }
-
             
