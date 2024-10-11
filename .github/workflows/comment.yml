@@ -27,7 +27,7 @@ jobs:
 
             core.exportVariable('COVERAGE', 'unknown');
 
-            const allJobs = await github.rest.actions.listJobsForWorkflowRun({
+            const { data: allJobs } = await github.rest.actions.listJobsForWorkflowRun({
               owner: context.repo.owner,
               repo: context.repo.repo,
               run_id: WORKFLOW_RUN_ID,
