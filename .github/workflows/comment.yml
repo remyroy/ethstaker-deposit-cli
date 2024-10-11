@@ -1,5 +1,5 @@
 # Safely comment on the PR - https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/
-name: Comment on pull request
+name: ci-comment
 run-name: commenting on PR by ${{ github.actor }}
 on:
   workflow_run:
@@ -8,11 +8,48 @@ on:
       - completed
 
 jobs:
-  comment:
+  completed-coverage:
     runs-on: ubuntu-latest
     if: >
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'
+    outputs:
+      coverage: ${{ steps.output.outputs.coverage }}
+    steps:
+      - name: 'Get coverage job success'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          env:
+            WORKFLOW_RUN_ID: '${{ github.event.workflow_run.id }}'
+          script: |
+            const { WORKFLOW_RUN_ID } = process.env;
+
+            core.exportVariable('COVERAGE', 'unknown');
+
+            const allJobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: WORKFLOW_RUN_ID,
+            });
+
+            for (const job in allJobs.jobs) {
+              if (
+                job.name === 'coverage-combine' &&
+                job.status == 'completed' &&
+                job.conclusion == 'success'
+              ) {
+                core.exportVariable('COVERAGE', 'completed');
+              }
+            }
+      - name: 'Output coverage status'
+        id: output
+        run: echo "coverage=${COVERAGE}" >> "$GITHUB_OUTPUT"
+  comment:
+    needs: completed-coverage
+    # Runs only if we have a completed coverage job from the ci-runner workflow
+    if: ${{ needs.completed-coverage.outputs.coverage == 'completed' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
