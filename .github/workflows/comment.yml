@@ -1,6 +1,6 @@
 # Safely comment on the PR - https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/
 name: ci-comment
-run-name: commenting on PR by ${{ github.actor }}
+run-name: ${{ github.actor }} is adding coverage report comment on PR
 on:
   workflow_run:
     workflows: [ "ci-runner" ]
@@ -16,12 +16,12 @@ jobs:
     outputs:
       coverage: ${{ steps.output.outputs.coverage }}
     steps:
-      - name: 'Get coverage job success'
+      - name: Get coverage job success
         uses: actions/github-script@v7
+        env:
+          WORKFLOW_RUN_ID: '${{ github.event.workflow_run.id }}'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          env:
-            WORKFLOW_RUN_ID: '${{ github.event.workflow_run.id }}'
           script: |
             const { WORKFLOW_RUN_ID } = process.env;
 
@@ -33,7 +33,7 @@ jobs:
               run_id: WORKFLOW_RUN_ID,
             });
 
-            for (const job in allJobs.jobs) {
+            allJobs.jobs.forEach((job) => {
               if (
                 job.name === 'coverage-combine' &&
                 job.status == 'completed' &&
@@ -41,14 +41,18 @@ jobs:
               ) {
                 core.exportVariable('COVERAGE', 'completed');
               }
-            }
-      - name: 'Output coverage status'
+            });
+      - name: Output coverage status
         id: output
         run: echo "coverage=${COVERAGE}" >> "$GITHUB_OUTPUT"
   comment:
     needs: completed-coverage
     # Runs only if we have a completed coverage job from the ci-runner workflow
     if: ${{ needs.completed-coverage.outputs.coverage == 'completed' }}
+    permissions:
+      issues: write
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
@@ -58,7 +62,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Comment on PR'
+      - name: Comment on PR
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
