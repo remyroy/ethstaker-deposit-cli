@@ -1,5 +1,5 @@
 name: ci-build
-run-name: ${{ github.actor }} is running ci-build
+run-name: ${{ github.actor }} is building binaries, building the docker image and drafting a release
 on:
   workflow_dispatch:
   push:
@@ -189,6 +189,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - name: Download build binaries
         uses: actions/download-artifact@v4
         with:
@@ -238,4 +239,16 @@ jobs:
                 data: fs.readFileSync(file),
               });
             }
-            
+
+            let releaseBodyTemplate = fs.readFileSync('.github/release_template.md', { encoding: 'utf8'});
+
+            let releaseBody = releaseBodyTemplate.replaceAll('`[GENERATED-RELEASE-NOTES]`', release.body);
+
+            console.log('Updating release body with generated content and template...');
+
+            const { data: updatedRelease } = await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.id,
+              body: releaseBody,
+            });
