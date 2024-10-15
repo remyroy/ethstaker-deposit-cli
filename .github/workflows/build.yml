@@ -205,7 +205,7 @@ jobs:
               core.setFailed(`Unhandled triggering event.`);
             }
 
-            console.log('Creating draft release for tag ${tagName}...')
+            console.log(`Creating draft release for tag ${tagName}...`)
 
             const { data: release } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
