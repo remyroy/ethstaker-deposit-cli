@@ -223,26 +223,131 @@ jobs:
               generate_release_notes: true,
             });
 
-            console.log(`Release ${release.id} created.`);
+            console.log(`Release ${release.id} created. Explore it on ${release.html_url}`);
+
+            let binariesMap = new Map();
+            const emptyBinaryObject = {
+              system: null,
+              architecture: null,
+              binary_archive: null,
+              binary_archive_download_url: null,
+              binary_checksum: null,
+              binary_checksum_download_url: null,
+              attestation: null,
+            };
+
+            const windowsSystem = 'Windows';
+            const macOSSystem = 'macOS';
+            const linuxSystem = 'Linux';
+
+            const amd64Architecture = 'x86_64';
+            const arm64Architecture = 'aarch64';
+
+            binariesMap.set('windows-amd64', Object.assign({}, emptyBinaryObject, {
+              system: windowsSystem,
+              architecture: amd64Architecture,
+            }));
+            binariesMap.set('windows-arm64', Object.assign({}, emptyBinaryObject, {
+              system: windowsSystem,
+              architecture: arm64Architecture,
+            }));
+            binariesMap.set('darwin-amd64', Object.assign({}, emptyBinaryObject, {
+              system: macOSSystem,
+              architecture: amd64Architecture,
+            }));
+            binariesMap.set('darwin-arm64', Object.assign({}, emptyBinaryObject, {
+              system: macOSSystem,
+              architecture: arm64Architecture,
+            }));
+            binariesMap.set('linux-amd64', Object.assign({}, emptyBinaryObject, {
+              system: linuxSystem,
+              architecture: amd64Architecture,
+            }));
+            binariesMap.set('linux-arm64', Object.assign({}, emptyBinaryObject, {
+              system: linuxSystem,
+              architecture: arm64Architecture,
+            }));
 
             console.log('Uploading release assets...');
+
+            const binaryPlatformRegex = /(\w+)-(\w+)(?=\.(?:zip|tar\.gz)(.sha256)?$)/;
 
             const archivesGlobber = await glob.create('assets/*/*')
             for await (const file of archivesGlobber.globGenerator()) {
               console.log(`Uploading ${path.basename(file)} to the release ${release.id}`);
 
-              await github.rest.repos.uploadReleaseAsset({
+              const fileName = path.basename(file);
+              const fileContent = fs.readFileSync(file);
+
+              const { data: asset } = await github.rest.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: release.id,
-                name: path.basename(file),
-                data: fs.readFileSync(file),
+                name: fileName,
+                data: fileContent,
               });
+
+              const match = fileName.match(binaryPlatformRegex);
+              if (match) {
+                const platform = `${match[1]}-${match[2]}`;
+
+                const binaryDetails = binariesMap.get(platform);
+
+                if (fileName.endsWith('.sha256')) {
+                  binariesMap.set(platform, Object.assign({}, binaryDetails, {
+                    binary_checksum: fileName,
+                    binary_checksum_download_url: asset.browser_download_url,
+                  }));
+                } else {
+                  binariesMap.set(platform, Object.assign({}, binaryDetails, {
+                    binary_archive: fileName,
+                    binary_archive_download_url: asset.browser_download_url,
+                  }));
+                }
+              }
             }
+
+            const binariesTable = [
+              '| System  | Architecture | Binary             | Checksum               |',
+              '|---------|--------------|--------------------|------------------------|'
+            ];
+
+            binariesMap.forEach((details, platform) => {
+              if (
+                details.binary_archive !== null &&
+                details.binary_archive_download_url !== null &&
+                details.binary_checksum !== null &&
+                details.binary_checksum_download_url !== null
+              ) {
+                const system = details.system;
+                const architecture = details.architecture;
+                const binaryName = details.binary_archive;
+                const binaryUrl = details.binary_archive_download_url;
+                const checksumName = details.binary_checksum;
+                const checksumUrl = details.binary_checksum_download_url;
+
+                binariesTable.push(`| ${system} | ${architecture}       | [${binaryName}](${binaryUrl}) | [sha256](${checksumUrl}) |`);
+              }
+            });
+
+            const binariesTableContent = binariesTable.join('\n');
+
+            const { data: workflowRun } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
 
             let releaseBodyTemplate = fs.readFileSync('.github/release_template.md', { encoding: 'utf8'});
 
+            console.log('Removing comments in release template...');
+
+            releaseBodyTemplate = releaseBodyTemplate.replaceAll(/^\[comment\]:\s*<>\s*\((.*?)\)\s*$/gm, '');
+            releaseBodyTemplate = releaseBodyTemplate.trim();
+
             let releaseBody = releaseBodyTemplate.replaceAll('`[GENERATED-RELEASE-NOTES]`', release.body);
+            releaseBody = releaseBody.replaceAll('`[BINARIES-TABLE]`', binariesTableContent);
+            releaseBody = releaseBody.replaceAll('`[WORKFLOW-RUN-URL]`', workflowRun.html_url);
 
             console.log('Updating release body with generated content and template...');
 
