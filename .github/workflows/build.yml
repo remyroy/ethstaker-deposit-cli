@@ -207,6 +207,9 @@ jobs:
 
             console.log(`Creating draft release for tag ${tagName}...`)
 
+            console.log(`tagName: ${tagName}`);
+            console.log(`context.sha: ${context.sha}`);
+
             const { data: release } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -216,7 +219,7 @@ jobs:
               generate_release_notes: true,
             });
 
-            console.log(`Release ${release.id} created. Explore it on ${release.html_url}`);
+            console.log(`Release ${release.id} created.`);
 
             let binariesMap = new Map();
             const emptyBinaryObject = {
@@ -358,5 +361,9 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: release.id,
+              tag_name: tagName,
+              target_commitish: context.sha,
               body: releaseBody,
             });
+
+            console.log(`Release ${updatedRelease.id} updated. Explore it on ${updatedRelease.html_url}`);
