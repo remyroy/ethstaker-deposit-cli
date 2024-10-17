@@ -488,7 +488,7 @@ async def test_script_bls_withdrawal() -> None:
     )
 
     seed_phrase = ''
-    encoded_phrase = ''
+    encoded_phrase = b''
     parsing = False
     mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/', 'new_mnemonic.json')
     msg_mnemonic_clipboard_warning = load_text(['msg_mnemonic_clipboard_warning'], mnemonic_json_file, 'new_mnemonic')
@@ -585,7 +585,7 @@ async def test_script_abbreviated_mnemonic() -> None:
     )
 
     seed_phrase = ''
-    encoded_phrase = ''
+    encoded_phrase = b''
     parsing = False
     mnemonic_json_file = os.path.join(os.getcwd(), 'ethstaker_deposit/../ethstaker_deposit/cli/', 'new_mnemonic.json')
     msg_mnemonic_clipboard_warning = load_text(['msg_mnemonic_clipboard_warning'], mnemonic_json_file, 'new_mnemonic')
