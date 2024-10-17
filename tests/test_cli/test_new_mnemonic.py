@@ -448,7 +448,8 @@ def test_pbkdf2_new_mnemonic(monkeypatch) -> None:
     clean_key_folder(scrypt_folder_path)
 
 
-@pytest.mark.skipif(sys.version_info[:2] == (3, 9) and sys.platform == "darwin", reason="breaks on macOS Python 3.9")
+@pytest.mark.skipif(sys.version_info[:2] == (3, 9), reason=(
+    "asyncio subprocess is broken in different ways on 3.9 with https://github.com/python/cpython/issues/88050"))
 @pytest.mark.asyncio
 async def test_script_bls_withdrawal() -> None:
     # Prepare folder
@@ -544,7 +545,8 @@ async def test_script_bls_withdrawal() -> None:
     clean_key_folder(my_folder_path)
 
 
-@pytest.mark.skipif(sys.version_info[:2] == (3, 9) and sys.platform == "darwin", reason="breaks on macOS Python 3.9")
+@pytest.mark.skipif(sys.version_info[:2] == (3, 9), reason=(
+    "asyncio subprocess is broken in different ways on 3.9 with https://github.com/python/cpython/issues/88050"))
 @pytest.mark.asyncio
 async def test_script_abbreviated_mnemonic() -> None:
     # Prepare folder
