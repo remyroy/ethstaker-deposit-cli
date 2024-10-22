@@ -239,7 +239,6 @@ dependencies = [
 
 [package.optional-dependencies]
 test = [
-    { name = "colorama" },
     { name = "coverage" },
     { name = "exceptiongroup" },
     { name = "flake8" },
@@ -253,7 +252,6 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "click" },
-    { name = "colorama", marker = "extra == 'test'" },
     { name = "coverage", marker = "extra == 'test'" },
     { name = "eth-typing" },
     { name = "eth-utils" },

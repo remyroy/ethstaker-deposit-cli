@@ -74,7 +74,6 @@ On Windows, you'll need:
 
 **To execute tests, you will need to install the test dependencies**:
 ```sh
-python3 -m pip install -r requirements.txt
-python3 -m pip install -r requirements_test.txt
+python3 -m pip install -r requirements.txt -r requirements_test.txt
 python3 -m pytest tests
 ```

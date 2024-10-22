@@ -1,5 +1,4 @@
 # requirements_test.in
-colorama # pip-compile did not pick up from mypy
 exceptiongroup # pip-compile did not pick up from mypy
 flake8
 jsonschema

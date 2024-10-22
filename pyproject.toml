@@ -30,7 +30,6 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 test = [
-    "colorama", # pip-compile did not pick up from mypy
     "exceptiongroup", # pip-compile did not pick up from mypy
     "flake8",
     "jsonschema",
