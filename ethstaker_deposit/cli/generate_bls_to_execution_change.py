@@ -180,6 +180,7 @@ def generate_bls_to_execution_change(
         chain_setting=chain_setting,
         start_index=validator_start_index,
         hex_withdrawal_address=withdrawal_address,
+        compounding=False,
     )
 
     # Check if the given old bls_withdrawal_credentials is as same as the mnemonic generated

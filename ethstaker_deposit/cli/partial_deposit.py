@@ -23,7 +23,11 @@ from ethstaker_deposit.utils.click import (
     choice_prompt_func,
     jit_option,
 )
-from ethstaker_deposit.utils.constants import DEFAULT_PARTIAL_DEPOSIT_FOLDER_NAME, EXECUTION_ADDRESS_WITHDRAWAL_PREFIX
+from ethstaker_deposit.utils.constants import (
+    DEFAULT_PARTIAL_DEPOSIT_FOLDER_NAME,
+    EXECUTION_ADDRESS_WITHDRAWAL_PREFIX,
+    COMPOUNDING_WITHDRAWAL_PREFIX,
+)
 from ethstaker_deposit.utils.deposit import export_deposit_data_json
 from ethstaker_deposit.utils.intl import (
     closest_match,
@@ -40,6 +44,7 @@ from ethstaker_deposit.utils.validation import (
     validate_keystore_file,
     validate_partial_deposit_amount,
     validate_withdrawal_address,
+    validate_yesno,
     validate_devnet_chain_setting,
 )
 
@@ -113,6 +118,20 @@ FUNC_NAME = 'partial_deposit'
     prompt=False,  # the callback handles the prompt
 )
 @jit_option(
+    callback=captive_prompt_callback(
+        lambda value: validate_yesno(None, None, value),
+        lambda: load_text(['arg_compounding', 'prompt'], func=FUNC_NAME),
+        default="False",
+        prompt_if_other_exists='withdrawal_address',
+    ),
+    default=False,
+    help=lambda: load_text(['arg_compounding', 'help'], func=FUNC_NAME),
+    param_decls='--compounding/--regular-withdrawal',
+    prompt=False,  # the callback handles the prompt
+    type=bool,
+    show_default=True,
+)
+@jit_option(
     default=os.getcwd(),
     help=lambda: load_text(['arg_partial_deposit_output_folder', 'help'], func=FUNC_NAME),
     param_decls='--output_folder',
@@ -133,6 +152,7 @@ def partial_deposit(
         keystore_password: str,
         amount: int,
         withdrawal_address: HexAddress,
+        compounding: bool,
         output_folder: str,
         devnet_chain_setting: Optional[BaseChainSetting],
         **kwargs: Any) -> None:
@@ -147,7 +167,11 @@ def partial_deposit(
     # Get chain setting
     chain_setting = devnet_chain_setting if devnet_chain_setting is not None else get_chain_setting(chain)
 
-    withdrawal_credentials = EXECUTION_ADDRESS_WITHDRAWAL_PREFIX
+    if compounding:
+        withdrawal_credentials = COMPOUNDING_WITHDRAWAL_PREFIX
+    else:
+        withdrawal_credentials = EXECUTION_ADDRESS_WITHDRAWAL_PREFIX
+
     withdrawal_credentials += b'\x00' * 11
     withdrawal_credentials += to_canonical_address(withdrawal_address)
 

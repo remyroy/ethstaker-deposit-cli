@@ -26,6 +26,7 @@ from ethstaker_deposit.settings import (
 from ethstaker_deposit.utils.constants import (
     BLS_WITHDRAWAL_PREFIX,
     EXECUTION_ADDRESS_WITHDRAWAL_PREFIX,
+    COMPOUNDING_WITHDRAWAL_PREFIX,
     ETH2GWEI,
     MAX_DEPOSIT_AMOUNT,
     MIN_DEPOSIT_AMOUNT,
@@ -50,6 +51,7 @@ from ethstaker_deposit.utils.file_handling import (
 class WithdrawalType(Enum):
     BLS_WITHDRAWAL = 0
     EXECUTION_ADDRESS_WITHDRAWAL = 1
+    COMPOUNDING_WITHDRAWAL = 2
 
 
 class Credential:
@@ -60,6 +62,7 @@ class Credential:
     def __init__(self, *, mnemonic: str, mnemonic_password: str,
                  index: int, amount: int, chain_setting: BaseChainSetting,
                  hex_withdrawal_address: Optional[HexAddress],
+                 compounding: bool,
                  use_pbkdf2: Optional[bool] = False):
         # Set path as EIP-2334 format
         # https://eips.ethereum.org/EIPS/eip-2334
@@ -76,6 +79,7 @@ class Credential:
         self.amount = amount
         self.chain_setting = chain_setting
         self.hex_withdrawal_address = hex_withdrawal_address
+        self.compounding = compounding
         self.use_pbkdf2 = use_pbkdf2
 
     @property
@@ -95,7 +99,10 @@ class Credential:
     @property
     def withdrawal_prefix(self) -> bytes:
         if self.withdrawal_address is not None:
-            return EXECUTION_ADDRESS_WITHDRAWAL_PREFIX
+            if self.compounding:
+                return COMPOUNDING_WITHDRAWAL_PREFIX
+            else:
+                return EXECUTION_ADDRESS_WITHDRAWAL_PREFIX
         else:
             return BLS_WITHDRAWAL_PREFIX
 
@@ -105,6 +112,8 @@ class Credential:
             return WithdrawalType.BLS_WITHDRAWAL
         elif self.withdrawal_prefix == EXECUTION_ADDRESS_WITHDRAWAL_PREFIX:
             return WithdrawalType.EXECUTION_ADDRESS_WITHDRAWAL
+        elif self.withdrawal_prefix == COMPOUNDING_WITHDRAWAL_PREFIX:
+            return WithdrawalType.COMPOUNDING_WITHDRAWAL
         else:
             raise ValueError(f"Invalid withdrawal_prefix {self.withdrawal_prefix.hex()}")
 
@@ -118,6 +127,13 @@ class Credential:
             and self.withdrawal_address is not None
         ):
             withdrawal_credentials = EXECUTION_ADDRESS_WITHDRAWAL_PREFIX
+            withdrawal_credentials += b'\x00' * 11
+            withdrawal_credentials += self.withdrawal_address
+        elif (
+            self.withdrawal_type == WithdrawalType.COMPOUNDING_WITHDRAWAL
+            and self.withdrawal_address is not None
+        ):
+            withdrawal_credentials = COMPOUNDING_WITHDRAWAL_PREFIX
             withdrawal_credentials += b'\x00' * 11
             withdrawal_credentials += self.withdrawal_address
         else:
@@ -279,6 +295,7 @@ class CredentialList:
                       chain_setting: BaseChainSetting,
                       start_index: int,
                       hex_withdrawal_address: Optional[HexAddress],
+                      compounding: bool,
                       use_pbkdf2: Optional[bool] = False) -> 'CredentialList':
         if len(amounts) != num_keys:
             raise ValueError(
@@ -296,6 +313,7 @@ class CredentialList:
                 'amount': amounts[index - start_index],
                 'chain_setting': chain_setting,
                 'hex_withdrawal_address': hex_withdrawal_address,
+                'compounding': compounding,
                 'use_pbkdf2': use_pbkdf2,
             } for index in key_indices]
 

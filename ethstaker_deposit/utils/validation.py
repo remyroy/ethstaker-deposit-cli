@@ -6,6 +6,9 @@ import sys
 import concurrent.futures
 from typing import Any, Dict, Sequence, Optional
 
+from click.types import BoolParamType
+from click.exceptions import BadParameter
+
 from eth_typing import (
     BLSPubkey,
     BLSSignature,
@@ -181,6 +184,18 @@ def validate_withdrawal_address(cts: click.Context, param: Any, address: str, re
     normalized_address = to_normalized_address(address)
     click.echo('\n%s\n' % load_text(['msg_ECDSA_hex_addr_withdrawal']))
     return normalized_address
+
+
+def validate_yesno(ctx: click.Context, param: Any, value: str) -> bool:
+    '''
+    Verifies that a value is part of the bool values accepted by click. The string values “1”, “true”,
+    “t”, “yes”, “y”, and “on” convert to True. “0”, “false”, “f”, “no”, “n”, and “off” convert to False.
+    '''
+    try:
+        param = BoolParamType()
+        return param.convert(value, param, ctx)
+    except BadParameter:
+        raise ValidationError(load_text(['err_invalid_bool_value']))
 
 
 def validate_partial_deposit_amount(amount: str) -> int:

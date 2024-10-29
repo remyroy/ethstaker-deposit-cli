@@ -18,6 +18,7 @@ from ethstaker_deposit.utils.validation import (
     validate_int_range,
     validate_password_strength,
     validate_withdrawal_address,
+    validate_yesno,
     validate_devnet_chain_setting,
 )
 from ethstaker_deposit.utils.constants import (
@@ -108,6 +109,20 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
             prompt=False,  # the callback handles the prompt
         ),
         jit_option(
+            callback=captive_prompt_callback(
+                lambda value: validate_yesno(None, None, value),
+                lambda: load_text(['arg_compounding', 'prompt'], func='generate_keys_arguments_decorator'),
+                default="False",
+                prompt_if_other_exists='withdrawal_address',
+            ),
+            default=False,
+            help=lambda: load_text(['arg_compounding', 'help'], func='generate_keys_arguments_decorator'),
+            param_decls='--compounding/--regular-withdrawal',
+            prompt=False,  # the callback handles the prompt
+            type=bool,
+            show_default=True,
+        ),
+        jit_option(
             default=False,
             is_flag=True,
             param_decls='--pbkdf2',
@@ -130,7 +145,7 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
 @click.pass_context
 def generate_keys(ctx: click.Context, validator_start_index: int,
                   num_validators: int, folder: str, chain: str, keystore_password: str,
-                  withdrawal_address: HexAddress, pbkdf2: bool,
+                  withdrawal_address: HexAddress, compounding: bool, pbkdf2: bool,
                   devnet_chain_setting: Optional[BaseChainSetting], **kwargs: Any) -> None:
     mnemonic = ctx.obj['mnemonic']
     mnemonic_password = ctx.obj['mnemonic_password']
@@ -153,6 +168,7 @@ def generate_keys(ctx: click.Context, validator_start_index: int,
         chain_setting=chain_setting,
         start_index=validator_start_index,
         hex_withdrawal_address=withdrawal_address,
+        compounding=compounding,
         use_pbkdf2=pbkdf2
     )
 
