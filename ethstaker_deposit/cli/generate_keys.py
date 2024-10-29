@@ -19,11 +19,13 @@ from ethstaker_deposit.utils.validation import (
     validate_password_strength,
     validate_withdrawal_address,
     validate_yesno,
+    validate_deposit_amount,
     validate_devnet_chain_setting,
 )
 from ethstaker_deposit.utils.constants import (
     DEFAULT_VALIDATOR_KEYS_FOLDER_NAME,
     MIN_ACTIVATION_AMOUNT,
+    ETH2GWEI,
 )
 from ethstaker_deposit.utils.ascii_art import RHINO_0
 from ethstaker_deposit.utils.click import (
@@ -42,6 +44,9 @@ from ethstaker_deposit.settings import (
     get_chain_setting,
     BaseChainSetting,
 )
+
+
+min_activation_amount_eth = MIN_ACTIVATION_AMOUNT // ETH2GWEI
 
 
 def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[..., Any]:
@@ -123,6 +128,20 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
             show_default=True,
         ),
         jit_option(
+            callback=captive_prompt_callback(
+                lambda amount: validate_deposit_amount(amount),
+                lambda: load_text(['arg_amount', 'prompt'], func='generate_keys_arguments_decorator'),
+                default=str(min_activation_amount_eth),
+                prompt_if_other_value=('compounding', True),
+            ),
+            default=str(min_activation_amount_eth),
+            help=lambda: load_text(['arg_amount', 'help'], func='generate_keys_arguments_decorator'),
+            param_decls='--amount',
+            prompt=False,  # the callback handles the prompt
+            type=int,
+            show_default=True,
+        ),
+        jit_option(
             default=False,
             is_flag=True,
             param_decls='--pbkdf2',
@@ -145,11 +164,13 @@ def generate_keys_arguments_decorator(function: Callable[..., Any]) -> Callable[
 @click.pass_context
 def generate_keys(ctx: click.Context, validator_start_index: int,
                   num_validators: int, folder: str, chain: str, keystore_password: str,
-                  withdrawal_address: HexAddress, compounding: bool, pbkdf2: bool,
+                  withdrawal_address: HexAddress, compounding: bool, amount: int, pbkdf2: bool,
                   devnet_chain_setting: Optional[BaseChainSetting], **kwargs: Any) -> None:
     mnemonic = ctx.obj['mnemonic']
     mnemonic_password = ctx.obj['mnemonic_password']
-    amounts = [MIN_ACTIVATION_AMOUNT] * num_validators
+    if withdrawal_address is None or not compounding:
+        amount = MIN_ACTIVATION_AMOUNT
+    amounts = [amount] * num_validators
     folder = os.path.join(folder, DEFAULT_VALIDATOR_KEYS_FOLDER_NAME)
 
     # Get chain setting

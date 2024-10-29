@@ -94,6 +94,7 @@ def captive_prompt_callback(
     prompt_if_none: bool = False,
     prompt_if_other_is_none: Optional[str] = None,
     prompt_if_other_exists: Optional[str] = None,
+    prompt_if_other_value: Optional[Tuple[str, Any]] = None,
 ) -> Callable[[click.Context, str, str], Any]:
     '''
     Traps the user in a prompt until the value chosen is acceptable
@@ -110,6 +111,9 @@ def captive_prompt_callback(
     parameter is from the default value and the value of that other parameter is none
     :param prompt_if_other_exists: the optional str of the other parameter to check. prompt if the source of the
     parameter is from the default value and the value of that other parameter is not none
+    :param prompt_if_other_value: the optional tuple str of the other parameter to check and its comparing value.
+    prompt if the source of the parameter is from the default value and the value of that other parameter equal to the
+    comparing value
     '''
     def callback(ctx: click.Context, param: Any, user_input: str) -> Any:
         # the callback is called twice, once for the option prompt and once to verify the input
@@ -125,6 +129,10 @@ def captive_prompt_callback(
             user_input = click.prompt(prompt(), hide_input=hide_input, default=_value_of(default))
         elif (prompt_if_other_exists is not None
                 and ctx.params.get(prompt_if_other_exists, None) is not None
+                and ctx.get_parameter_source(param.name) == click.core.ParameterSource.DEFAULT):
+            user_input = click.prompt(prompt(), hide_input=hide_input, default=_value_of(default))
+        elif (prompt_if_other_value is not None
+                and ctx.params.get(prompt_if_other_value[0], None) == prompt_if_other_value[1]
                 and ctx.get_parameter_source(param.name) == click.core.ParameterSource.DEFAULT):
             user_input = click.prompt(prompt(), hide_input=hide_input, default=_value_of(default))
         if config.non_interactive:

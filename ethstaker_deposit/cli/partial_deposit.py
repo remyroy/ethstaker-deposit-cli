@@ -42,7 +42,7 @@ from ethstaker_deposit.utils.ssz import (
 from ethstaker_deposit.utils.validation import (
     validate_deposit,
     validate_keystore_file,
-    validate_partial_deposit_amount,
+    validate_deposit_amount,
     validate_withdrawal_address,
     validate_yesno,
     validate_devnet_chain_setting,
@@ -95,7 +95,7 @@ FUNC_NAME = 'partial_deposit'
 )
 @jit_option(
     callback=captive_prompt_callback(
-        lambda amount: validate_partial_deposit_amount(amount),
+        lambda amount: validate_deposit_amount(amount),
         lambda: load_text(['arg_partial_deposit_amount', 'prompt'], func=FUNC_NAME),
         default="32",
         prompt_if_none=True,

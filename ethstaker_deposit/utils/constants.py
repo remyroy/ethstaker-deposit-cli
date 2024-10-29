@@ -16,7 +16,6 @@ EXECUTION_ADDRESS_WITHDRAWAL_PREFIX = bytes.fromhex('01')
 COMPOUNDING_WITHDRAWAL_PREFIX = bytes.fromhex('02')
 
 ETH2GWEI = 10 ** 9
-# TODO: check if user will can deposit a new validator with more than 32 and 0x02 credentials or 0x00 and 0x01 only
 MIN_DEPOSIT_AMOUNT = 2 ** 0 * ETH2GWEI
 MIN_ACTIVATION_AMOUNT = 2 ** 5 * ETH2GWEI
 MAX_DEPOSIT_AMOUNT = 2 ** 11 * ETH2GWEI
