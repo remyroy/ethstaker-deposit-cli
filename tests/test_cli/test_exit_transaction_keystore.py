@@ -39,7 +39,8 @@ def test_exit_transaction_keystore() -> None:
         index=0,
         amount=0,
         chain_setting=get_chain_setting(chain),
-        hex_withdrawal_address=None
+        hex_withdrawal_address=None,
+        compounding=False,
     )
 
     # Save keystore file
@@ -112,6 +113,7 @@ def test_exit_transaction_with_pbkdf2() -> None:
         amount=0,
         chain_setting=get_chain_setting(chain),
         hex_withdrawal_address=None,
+        compounding=False,
         use_pbkdf2=True,
     )
     scrypt_credential = Credential(
@@ -121,6 +123,7 @@ def test_exit_transaction_with_pbkdf2() -> None:
         amount=0,
         chain_setting=get_chain_setting(chain),
         hex_withdrawal_address=None,
+        compounding=False,
         use_pbkdf2=False,
     )
 
@@ -260,7 +263,8 @@ def test_invalid_keystore_password() -> None:
         index=0,
         amount=0,
         chain_setting=get_chain_setting(chain),
-        hex_withdrawal_address=None
+        hex_withdrawal_address=None,
+        compounding=False,
     )
 
     # Save keystore file
@@ -320,7 +324,8 @@ def test_exit_transaction_keystore_custom_testnet() -> None:
         index=0,
         amount=0,
         chain_setting=get_devnet_chain_setting(**devnet_chain),
-        hex_withdrawal_address=None
+        hex_withdrawal_address=None,
+        compounding=False,
     )
 
     # Save keystore file

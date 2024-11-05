@@ -30,7 +30,8 @@ def test_exit_transaction_keystore() -> None:
         index=0,
         amount=0,
         chain_setting=get_chain_setting('mainnet'),
-        hex_withdrawal_address=None
+        hex_withdrawal_address=None,
+        compounding=False,
     )
 
     # Save keystore file

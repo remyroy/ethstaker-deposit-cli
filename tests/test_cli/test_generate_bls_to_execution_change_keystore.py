@@ -37,7 +37,8 @@ def test_bls_change_keystore() -> None:
         index=0,
         amount=0,
         chain_setting=get_chain_setting(chain),
-        hex_withdrawal_address=None
+        hex_withdrawal_address=None,
+        compounding=False,
     )
 
     keystore_filepath = credential.save_signing_keystore(keystore_password, changes_folder_path, time.time())
@@ -103,6 +104,7 @@ def test_bls_change_keystore_with_pbkdf2() -> None:
         amount=0,
         chain_setting=get_chain_setting(chain),
         hex_withdrawal_address=None,
+        compounding=False,
         use_pbkdf2=True,
     )
     scrypt_credential = Credential(
@@ -112,6 +114,7 @@ def test_bls_change_keystore_with_pbkdf2() -> None:
         amount=0,
         chain_setting=get_chain_setting(chain),
         hex_withdrawal_address=None,
+        compounding=False,
         use_pbkdf2=False,
     )
 
@@ -247,7 +250,8 @@ def test_invalid_keystore_password() -> None:
         index=0,
         amount=0,
         chain_setting=get_chain_setting(chain),
-        hex_withdrawal_address=None
+        hex_withdrawal_address=None,
+        compounding=False,
     )
 
     keystore_filepath = credential.save_signing_keystore(keystore_password, bls_change_folder_path, time.time())
@@ -307,7 +311,8 @@ def test_bls_change_keystore_custom_testnet() -> None:
         index=0,
         amount=0,
         chain_setting=get_devnet_chain_setting(**devnet_chain),
-        hex_withdrawal_address=None
+        hex_withdrawal_address=None,
+        compounding=False,
     )
 
     keystore_filepath = credential.save_signing_keystore(keystore_password, changes_folder_path, time.time())
@@ -376,7 +381,8 @@ def test_invalid_custom_testnet() -> None:
         index=0,
         amount=0,
         chain_setting=get_devnet_chain_setting(**correct_devnet_chain),
-        hex_withdrawal_address=None
+        hex_withdrawal_address=None,
+        compounding=False,
     )
 
     keystore_filepath = credential.save_signing_keystore(keystore_password, changes_folder_path, time.time())

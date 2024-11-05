@@ -141,6 +141,7 @@ def exit_transaction_mnemonic(
             'amount': 0,
             'chain_setting': chain_setting,
             'hex_withdrawal_address': None,
+            'compounding': False,
         } for index in key_indices]
 
         with concurrent.futures.ProcessPoolExecutor() as executor:

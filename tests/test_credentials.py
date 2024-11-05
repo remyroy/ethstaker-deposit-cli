@@ -14,4 +14,5 @@ def test_from_mnemonic() -> None:
             chain_setting=MainnetSetting,
             start_index=1,
             hex_withdrawal_address=None,
+            compounding=False,
         )

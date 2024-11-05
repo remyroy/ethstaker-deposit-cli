@@ -62,7 +62,7 @@ class Credential:
     def __init__(self, *, mnemonic: str, mnemonic_password: str,
                  index: int, amount: int, chain_setting: BaseChainSetting,
                  hex_withdrawal_address: Optional[HexAddress],
-                 compounding: bool,
+                 compounding: Optional[bool] = False,
                  use_pbkdf2: Optional[bool] = False):
         # Set path as EIP-2334 format
         # https://eips.ethereum.org/EIPS/eip-2334
@@ -295,7 +295,7 @@ class CredentialList:
                       chain_setting: BaseChainSetting,
                       start_index: int,
                       hex_withdrawal_address: Optional[HexAddress],
-                      compounding: bool,
+                      compounding: Optional[bool] = False,
                       use_pbkdf2: Optional[bool] = False) -> 'CredentialList':
         if len(amounts) != num_keys:
             raise ValueError(
