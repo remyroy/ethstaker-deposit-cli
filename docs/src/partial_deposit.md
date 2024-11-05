@@ -18,6 +18,8 @@ If you wish to create a validator with 0x00 credentials, you must use the **[new
 
 - **`--withdrawal_address`**: The withdrawal address of the existing validator or the desired withdrawal address.
 
+- **`--compounding / --regular-withdrawal`**: Generates compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance or generate regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance. Use of this option requires a withdrawal address. This feature is only supported on networks that have undergone the Pectra fork. Defaults to regular withdrawal.
+
 - **`--output_folder`**: The folder path for the `deposit-*` JSON file.
 
 - **`--devnet_chain_setting`**: The custom chain setting of a devnet or testnet. Note that it will override your `--chain` choice. This should be a JSON string containing an object with the following keys: network_name, genesis_fork_version, exit_fork_version and genesis_validator_root.
