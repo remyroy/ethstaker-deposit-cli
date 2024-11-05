@@ -27,6 +27,8 @@ from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     choice_prompt_func,
     jit_option,
+    prompt_if_none,
+    prompt_if_other_is_none,
 )
 from ethstaker_deposit.utils.intl import (
     closest_match,
@@ -53,7 +55,7 @@ FUNC_NAME = 'generate_bls_to_execution_change_keystore'
             lambda: load_text(['arg_chain', 'prompt'], func=FUNC_NAME),
             ALL_CHAIN_KEYS
         ),
-        prompt_if_other_is_none='devnet_chain_setting',
+        prompt_if=prompt_if_other_is_none('devnet_chain_setting'),
         default=MAINNET,
     ),
     default=MAINNET,
@@ -65,7 +67,7 @@ FUNC_NAME = 'generate_bls_to_execution_change_keystore'
     callback=captive_prompt_callback(
         lambda file: validate_keystore_file(file),
         lambda: load_text(['arg_bls_to_execution_changes_keystore_keystore', 'prompt'], func=FUNC_NAME),
-        prompt_if_none=True,
+        prompt_if=prompt_if_none,
     ),
     help=lambda: load_text(['arg_bls_to_execution_changes_keystore_keystore', 'help'], func=FUNC_NAME),
     param_decls='--keystore',
@@ -99,7 +101,7 @@ FUNC_NAME = 'generate_bls_to_execution_change_keystore'
         lambda: load_text(['arg_withdrawal_address', 'prompt'], func=FUNC_NAME),
         lambda: load_text(['arg_withdrawal_address', 'confirm'], func=FUNC_NAME),
         lambda: load_text(['arg_withdrawal_address', 'mismatch'], func=FUNC_NAME),
-        prompt_if_none=True,
+        prompt_if=prompt_if_none,
     ),
     help=lambda: load_text(['arg_withdrawal_address', 'help'], func=FUNC_NAME),
     param_decls=['--withdrawal_address'],

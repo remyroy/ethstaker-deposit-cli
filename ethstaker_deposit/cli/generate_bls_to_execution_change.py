@@ -32,6 +32,8 @@ from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     choice_prompt_func,
     jit_option,
+    prompt_if_none,
+    prompt_if_other_is_none,
 )
 from ethstaker_deposit.exceptions import ValidationError
 from ethstaker_deposit.utils.intl import (
@@ -81,7 +83,7 @@ FUNC_NAME = 'generate_bls_to_execution_change'
             lambda: load_text(['arg_chain', 'prompt'], func=FUNC_NAME),
             ALL_CHAIN_KEYS
         ),
-        prompt_if_other_is_none='devnet_chain_setting',
+        prompt_if=prompt_if_other_is_none('devnet_chain_setting'),
         default=MAINNET,
     ),
     default=MAINNET,
@@ -114,7 +116,7 @@ FUNC_NAME = 'generate_bls_to_execution_change'
         lambda bls_withdrawal_credentials_list:
             validate_bls_withdrawal_credentials_list(bls_withdrawal_credentials_list),
         lambda: load_text(['arg_bls_withdrawal_credentials_list', 'prompt'], func=FUNC_NAME),
-        prompt_if_none=True,
+        prompt_if=prompt_if_none,
     ),
     help=lambda: load_text(['arg_bls_withdrawal_credentials_list', 'help'], func=FUNC_NAME),
     param_decls='--bls_withdrawal_credentials_list',
@@ -126,7 +128,7 @@ FUNC_NAME = 'generate_bls_to_execution_change'
         lambda: load_text(['arg_withdrawal_address', 'prompt'], func=FUNC_NAME),
         lambda: load_text(['arg_withdrawal_address', 'confirm'], func=FUNC_NAME),
         lambda: load_text(['arg_withdrawal_address', 'mismatch'], func=FUNC_NAME),
-        prompt_if_none=True,
+        prompt_if=prompt_if_none,
     ),
     help=lambda: load_text(['arg_withdrawal_address', 'help'], func=FUNC_NAME),
     param_decls=['--withdrawal_address'],

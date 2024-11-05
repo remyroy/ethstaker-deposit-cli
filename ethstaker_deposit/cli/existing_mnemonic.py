@@ -19,6 +19,7 @@ from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     choice_prompt_func,
     jit_option,
+    prompt_if_none,
 )
 from ethstaker_deposit.utils.intl import fuzzy_reverse_dict_lookup, get_first_options, load_text
 from ethstaker_deposit.utils.validation import validate_int_range
@@ -39,7 +40,7 @@ def load_mnemonic_arguments_decorator(function: Callable[..., Any]) -> Callable[
                 captive_prompt_callback(
                     lambda mnemonic: validate_mnemonic(mnemonic=mnemonic, language=c.params.get('mnemonic_language')),
                     prompt=lambda: load_text(['arg_mnemonic', 'prompt'], func='existing_mnemonic'),
-                    prompt_if_none=True,
+                    prompt_if=prompt_if_none,
                 )(c, _, mnemonic),
             help=lambda: load_text(['arg_mnemonic', 'help'], func='existing_mnemonic'),
             param_decls='--mnemonic',
@@ -105,7 +106,7 @@ def validate_mnemonic_language(ctx: click.Context, param: Any, language: str) ->
         lambda num: validate_int_range(num, 0, 2**32),
         lambda: load_text(['arg_validator_start_index', 'prompt'], func='existing_mnemonic'),
         lambda: load_text(['arg_validator_start_index', 'confirm'], func='existing_mnemonic'),
-        prompt_if_none=True,
+        prompt_if=prompt_if_none,
     ),
     default=0,
     help=lambda: load_text(['arg_validator_start_index', 'help'], func='existing_mnemonic'),

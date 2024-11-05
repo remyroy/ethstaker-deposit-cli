@@ -7,6 +7,7 @@ from ethstaker_deposit.utils import config
 from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     jit_option,
+    prompt_if_none,
 )
 from ethstaker_deposit.utils.intl import (
     load_text,
@@ -24,7 +25,7 @@ FUNC_NAME = 'test_keystore'
     callback=captive_prompt_callback(
         lambda file: validate_keystore_file(file),
         lambda: load_text(['arg_test_keystore_keystore', 'prompt'], func=FUNC_NAME),
-        prompt_if_none=True,
+        prompt_if=prompt_if_none,
     ),
     help=lambda: load_text(['arg_test_keystore_keystore', 'help'], func=FUNC_NAME),
     param_decls='--keystore',

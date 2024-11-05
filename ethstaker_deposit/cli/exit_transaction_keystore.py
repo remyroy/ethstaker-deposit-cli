@@ -18,6 +18,8 @@ from ethstaker_deposit.utils.click import (
     captive_prompt_callback,
     choice_prompt_func,
     jit_option,
+    prompt_if_none,
+    prompt_if_other_is_none,
 )
 from ethstaker_deposit.utils.constants import DEFAULT_EXIT_TRANSACTION_FOLDER_NAME
 from ethstaker_deposit.utils.intl import (
@@ -45,7 +47,7 @@ FUNC_NAME = 'exit_transaction_keystore'
             lambda: load_text(['arg_exit_transaction_keystore_chain', 'prompt'], func=FUNC_NAME),
             ALL_CHAIN_KEYS
         ),
-        prompt_if_other_is_none='devnet_chain_setting',
+        prompt_if=prompt_if_other_is_none('devnet_chain_setting'),
         default=MAINNET,
     ),
     default=MAINNET,
@@ -57,7 +59,7 @@ FUNC_NAME = 'exit_transaction_keystore'
     callback=captive_prompt_callback(
         lambda file: validate_keystore_file(file),
         lambda: load_text(['arg_exit_transaction_keystore_keystore', 'prompt'], func=FUNC_NAME),
-        prompt_if_none=True,
+        prompt_if=prompt_if_none,
     ),
     help=lambda: load_text(['arg_exit_transaction_keystore_keystore', 'help'], func=FUNC_NAME),
     param_decls='--keystore',
