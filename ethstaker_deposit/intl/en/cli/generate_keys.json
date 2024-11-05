@@ -24,8 +24,8 @@
             "mismatch": "Error: the two entered values do not match. Please type again."
         },
         "arg_compounding": {
-            "help": "Generates compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance or generate regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance. Use of this option requires a withdrawal address.",
-            "prompt": "Please enter yes if you want to generate compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance. Please type no or nothing if you want regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance."
+            "help": "Generates compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance or generate regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance. Use of this option requires a withdrawal address. This feature is only supported on networks that have undergone the Pectra fork.",
+            "prompt": "Please enter yes if you want to generate compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance. Compounding validators and 0x02 withdrawal credentials are only supported on networks that have undergone the Pectra fork. Please type no or nothing if you want regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance."
         },
         "arg_amount": {
             "help": "The amount to deposit to these validators in ether denomination. Must be at least 1 ether and can not have greater precision than 1 gwei. Use of this option requires compounding validators.",

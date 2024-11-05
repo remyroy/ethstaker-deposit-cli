@@ -29,8 +29,8 @@
           "prompt": "Please enter the withdrawal address. If you wish to create a validator with 0x00 credentials use the new-mnemonic or existing-mnemonic command."
       },
       "arg_compounding": {
-          "help": "Generates compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance or generate regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance.",
-          "prompt": "Please enter yes if you want to generate compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance. Please type no or nothing if you want regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance."
+          "help": "Generates compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance or generate regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance. This feature is only supported on networks that have undergone the Pectra fork.",
+          "prompt": "Please enter yes if you want to generate compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance. Compounding validators and 0x02 withdrawal credentials are only supported on networks that have undergone the Pectra fork. Please type no or nothing if you want regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance."
       },
       "arg_devnet_chain_setting": {
           "help": "[DEVNET ONLY] Set specific GENESIS_FORK_VERSION value. This should be a JSON string containing an object with the following keys: network_name, genesis_fork_version, exit_fork_version and genesis_validator_root. It should be similar to what you can find in settings.py. This will override any selected chain."
