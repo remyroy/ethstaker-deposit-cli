@@ -8,7 +8,7 @@ If you wish to create a validator with 0x00 credentials, you must use the **[new
 
 ## Optional Arguments
 
-- **`--chain`**: The chain to use for generating the deposit data. Options are: 'mainnet', 'holesky', etc.
+- **`--chain`**: The chain to use for generating the deposit data. Options are: 'mainnet', 'sepolia', 'holesky', 'mekong', or 'ephemery'.
 
 - **`--keystore`**: The keystore file associating with the validator you wish to deposit to.
 

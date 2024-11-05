@@ -7,7 +7,7 @@ Creates an exit transaction using a keystore file.
 
 ## Optional Arguments
 
-- **`--chain`**: The chain to use for generating the deposit data. Options are: 'mainnet', 'holesky', etc.
+- **`--chain`**: The chain to use for generating the deposit data. Options are: 'mainnet', 'sepolia', 'holesky', 'mekong', or 'ephemery'.
 
 - **`--keystore`**: The keystore file associating with the validator you wish to exit.
 

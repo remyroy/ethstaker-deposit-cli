@@ -9,7 +9,7 @@ Generates a new BIP-39 mnemonic along with validator keystore and deposit files 
 
 - **`--mnemonic_language`**: The language of the BIP-39 mnemonic. Options are: 'chinese_simplified', 'chinese_traditional', 'czech', 'english', 'french', 'italian', 'japanese', 'korean', 'portuguese', 'spanish'.
 
-- **`--chain`**: The chain to use for generating the deposit data. Options are: 'mainnet', 'holesky', etc...
+- **`--chain`**: The chain to use for generating the deposit data. Options are: 'mainnet', 'sepolia', 'holesky', 'mekong', or 'ephemery'.
 
 - **`--num_validators`**: Number of validators to create.
 
