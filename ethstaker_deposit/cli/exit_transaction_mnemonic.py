@@ -31,6 +31,7 @@ from ethstaker_deposit.utils.validation import (
     verify_signed_exit_json,
     validate_devnet_chain_setting,
 )
+from ethstaker_deposit.utils.terminal import clear_terminal
 
 
 def _credential_builder(kwargs: Dict[str, Any]) -> Credential:
@@ -122,6 +123,9 @@ def exit_transaction_mnemonic(
         **kwargs: Any) -> None:
 
     folder = os.path.join(output_folder, DEFAULT_EXIT_TRANSACTION_FOLDER_NAME)
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+    clear_terminal()
 
     # Get chain setting
     chain_setting = devnet_chain_setting if devnet_chain_setting is not None else get_chain_setting(chain)
@@ -148,9 +152,6 @@ def exit_transaction_mnemonic(
             for credential in executor.map(_credential_builder, executor_kwargs):
                 credentials.append(credential)
                 bar.update(1)
-
-    if not os.path.exists(folder):
-        os.mkdir(folder)
 
     transaction_filefolders = []
     with click.progressbar(length=num_keys,  # type: ignore[var-annotated]
