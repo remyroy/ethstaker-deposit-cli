@@ -18,22 +18,24 @@ def clear_terminal() -> None:
     elif sys.platform == 'darwin':
         clean_env = os.environ.copy()
 
-    if sys.platform == 'win32':
-        # Special-case for asyncio pytest on Windows
-        if os.getenv("IS_ASYNC_TEST") == "1":
-            click.clear()
-        elif shutil.which('clear'):
-            subprocess.run(['clear'])
+    for count in range(2):
+        # Call everything twice to complete the clear on iTerm2 and for good measure
+        if sys.platform == 'win32':
+            # Special-case for asyncio pytest on Windows
+            if os.getenv("IS_ASYNC_TEST") == "1":
+                click.clear()
+            elif shutil.which('clear'):
+                subprocess.run(['clear'])
+            else:
+                subprocess.run('cls', shell=True)
+        elif sys.platform == 'linux' or sys.platform == 'darwin':
+            if shutil.which('clear'):
+                subprocess.run(['clear'], env=clean_env)
+            else:
+                click.clear()
+            if shutil.which('tput'):
+                subprocess.run(['tput', 'reset'], env=clean_env)
+            if shutil.which('reset'):
+                subprocess.run(['reset'], env=clean_env)
         else:
-            subprocess.run('cls', shell=True)
-    elif sys.platform == 'linux' or sys.platform == 'darwin':
-        if shutil.which('clear'):
-            subprocess.run(['clear'], env=clean_env)
-        else:
             click.clear()
-        if shutil.which('tput'):
-            subprocess.run(['tput', 'reset'], env=clean_env)
-        if shutil.which('reset'):
-            subprocess.run(['reset'], env=clean_env)
-    else:
-        click.clear()
