@@ -2,11 +2,12 @@
 
 ## Supported Versions
 
-We are still in active development. We will support the latest release with security updates as we find them.
+We will support the latest release with security updates as we find them.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.x.x   | :white_check_mark: |
+| 1.x.x   | :white_check_mark: |
+| 0.x.x   | Deprecated         |
 
 ## Reporting a Vulnerability
 

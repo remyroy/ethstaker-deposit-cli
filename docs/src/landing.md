@@ -1,6 +1,10 @@
 # Welcome to the `ethstaker-deposit-cli`!
 
-The [`ethstaker-deposit-cli`](https://github.com/eth-educators/ethstaker-deposit-cli) is a command-line tool forked from Ethereum's [`staking-deposit-cli`](https://github.com/ethereum/staking-deposit-cli) with more functionality and improved performance.
+The [`ethstaker-deposit-cli`](https://github.com/eth-educators/ethstaker-deposit-cli) is a command-line tool used to generate validator keys forked from Ethereum's [`staking-deposit-cli`](https://github.com/ethereum/staking-deposit-cli) with more functionality and improved performance.
+
+## Security reports
+
+You can read [the security assessment report by Trail of Bits](https://github.com/trailofbits/publications/blob/master/reviews/2024-12-ethstaker-depositcli-securityreview.pdf) that was completed on December 13, 2024. You can find the security assessment report by Trail of Bits of the original staking-deposit-cli project [here](https://github.com/trailofbits/publications/blob/master/reviews/ETH2DepositCLI.pdf).
 
 ## Important Concerns
 
