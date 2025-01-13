@@ -23,7 +23,7 @@ jobs:
       - name: Run type checker
         run: python -m mypy --config-file mypy.ini -p ethstaker_deposit
       - name: Run linter
-        run: flake8 --config=flake8.ini ./ethstaker_deposit ./tests
+        run: ruff check ./ethstaker_deposit ./tests
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

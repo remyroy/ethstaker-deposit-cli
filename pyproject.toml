@@ -12,6 +12,13 @@ version = {attr = "ethstaker_deposit.__version__"}
 generate-hashes = true
 no-annotate = true
 
+[tool.ruff]
+preview = true
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "W", "F"]
+
 [project]
 name = "ethstaker_deposit"
 description = "Secure key generation for deposits"
