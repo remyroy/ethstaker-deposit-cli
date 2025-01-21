@@ -72,6 +72,13 @@ On Windows, you'll need:
     pre-commit install
     ```
 
+    If you are using `uv`, you can also install it using:
+
+    ```console
+    uv sync --all-extras
+    uv run pre-commit install
+    ```
+
 **To execute tests, you will need to install the test dependencies**:
 ```sh
 python3 -m pip install -r requirements.txt -r requirements_test.txt
