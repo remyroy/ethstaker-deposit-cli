@@ -16,7 +16,7 @@ async def main():
         run_script_cmd = './deposit.sh'
 
     install_cmd = run_script_cmd + ' install'
-    print('[INFO] Creating subprocess 1: installation:' , install_cmd)
+    print('[INFO] Creating subprocess 1: installation:', install_cmd)
     proc = await asyncio.create_subprocess_shell(
         install_cmd,
     )

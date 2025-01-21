@@ -16,7 +16,7 @@ async def main():
         run_script_cmd = './deposit.sh'
 
     install_cmd = run_script_cmd + ' install'
-    print('[INFO] Creating subprocess 1: installation:' , install_cmd)
+    print('[INFO] Creating subprocess 1: installation:', install_cmd)
     proc = await asyncio.create_subprocess_shell(
         install_cmd,
     )
@@ -30,7 +30,8 @@ async def main():
         'generate-bls-to-execution-change',
         '--bls_to_execution_changes_folder', my_folder_path,
         '--chain', 'mainnet',
-        '--mnemonic', '\"sister protect peanut hill ready work profit fit wish want small inflict flip member tail between sick setup bright duck morning sell paper worry\"',
+        '--mnemonic', ('\"sister protect peanut hill ready work profit fit wish want small inflict flip member '
+        'tail between sick setup bright duck morning sell paper worry\"'),
         '--bls_withdrawal_credentials_list', '0x00bd0b5a34de5fb17df08410b5e615dda87caf4fb72d0aac91ce5e52fc6aa8de',
         '--validator_start_index', '0',
         '--validator_indices', '1',
