@@ -48,26 +48,28 @@ dynamic = ["version"]
 [project.optional-dependencies]
 test = [
     "exceptiongroup==1.2.2",
-    "flake8==7.1.1",
     "jsonschema==4.23.0",
     "mypy==1.14.1",
     "pytest==8.3.4",
-    "pytest-asyncio==0.25.1",
+    "pytest-asyncio==0.25.2",
     "coverage==7.6.10",
     "tomli==2.2.1",
     "attrs==24.2.0",
     "iniconfig==2.0.0",
     "jsonschema-specifications==2023.12.1",
-    "mccabe==0.7.0",
     "mypy-extensions==1.0.0",
     "packaging==24.1",
     "pluggy==1.5.0",
-    "pycodestyle==2.12.1",
-    "pyflakes==3.2.0",
     "referencing==0.35.1",
     "rpds-py==0.20.0",
     "typing-extensions==4.12.2",
+    "ruff==0.9.0",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/eth-educators/ethstaker-deposit-cli"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.1.0",
+]
