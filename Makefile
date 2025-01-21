@@ -9,7 +9,7 @@ help:
 	@echo "venv_deposit - run deposit cli with venv"
 	@echo "venv_build - install basic dependencies with venv"
 	@echo "venv_build_test - install testing dependencies with venv"
-	@echo "venv_lint - check style with flake8 and mypy with venv"
+	@echo "venv_lint - check style with ruff and mypy with venv"
 	@echo "venv_test - run tests with venv"
 
 clean:
@@ -36,7 +36,7 @@ venv_test: venv_build_test
 	$(VENV_ACTIVATE) && python -m pytest ./tests
 
 venv_lint: venv_build_test
-	$(VENV_ACTIVATE) && flake8 --config=flake8.ini ./ethstaker_deposit ./tests && mypy --config-file mypy.ini -p ethstaker_deposit
+	$(VENV_ACTIVATE) && ruff check ./ethstaker_deposit ./tests && mypy --config-file mypy.ini -p ethstaker_deposit
 
 venv_deposit: venv_build
 	$(VENV_ACTIVATE) && python -m ethstaker_deposit $(filter-out $@,$(MAKECMDGOALS))
