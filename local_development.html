@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="landing.html"><strong aria-hidden="true">1.</strong> Ethstaker Deposit CLI</a></li><li class="chapter-item expanded "><a href="quick_setup.html"><strong aria-hidden="true">2.</strong> Quick Setup</a></li><li class="chapter-item expanded "><a href="new_mnemonic.html"><strong aria-hidden="true">3.</strong> New Mnemonic</a></li><li class="chapter-item expanded "><a href="existing_mnemonic.html"><strong aria-hidden="true">4.</strong> Existing Mnemonic</a></li><li class="chapter-item expanded "><a href="generate_bls_to_execution_change.html"><strong aria-hidden="true">5.</strong> Generate BLS to Execution Change</a></li><li class="chapter-item expanded "><a href="exit_transaction_keystore.html"><strong aria-hidden="true">6.</strong> Exit Transaction Keystore</a></li><li class="chapter-item expanded "><a href="exit_transaction_mnemonic.html"><strong aria-hidden="true">7.</strong> Exit Transaction Mnemonic</a></li><li class="chapter-item expanded "><a href="partial_deposit.html"><strong aria-hidden="true">8.</strong> Partial Deposit</a></li><li class="chapter-item expanded "><a href="local_development.html" class="active"><strong aria-hidden="true">9.</strong> Local Development</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="landing.html"><strong aria-hidden="true">1.</strong> Ethstaker Deposit CLI</a></li><li class="chapter-item expanded "><a href="quick_setup.html"><strong aria-hidden="true">2.</strong> Quick Setup</a></li><li class="chapter-item expanded "><a href="other_install_options.html"><strong aria-hidden="true">3.</strong> Other Install Options</a></li><li class="chapter-item expanded affix "><li class="part-title">Commands</li><li class="chapter-item expanded "><a href="new_mnemonic.html"><strong aria-hidden="true">4.</strong> New Mnemonic</a></li><li class="chapter-item expanded "><a href="existing_mnemonic.html"><strong aria-hidden="true">5.</strong> Existing Mnemonic</a></li><li class="chapter-item expanded "><a href="generate_bls_to_execution_change.html"><strong aria-hidden="true">6.</strong> Generate BLS to Execution Change</a></li><li class="chapter-item expanded "><a href="generate_bls_to_execution_change_keystore.html"><strong aria-hidden="true">7.</strong> Generate BLS to Execution Change Keystore</a></li><li class="chapter-item expanded "><a href="exit_transaction_keystore.html"><strong aria-hidden="true">8.</strong> Exit Transaction Keystore</a></li><li class="chapter-item expanded "><a href="exit_transaction_mnemonic.html"><strong aria-hidden="true">9.</strong> Exit Transaction Mnemonic</a></li><li class="chapter-item expanded "><a href="partial_deposit.html"><strong aria-hidden="true">10.</strong> Partial Deposit</a></li><li class="chapter-item expanded "><a href="test_keystore.html"><strong aria-hidden="true">11.</strong> Test Keystore</a></li><li class="chapter-item expanded affix "><li class="part-title">File formats</li><li class="chapter-item expanded "><a href="keystore_file.html"><strong aria-hidden="true">12.</strong> Keystore</a></li><li class="chapter-item expanded "><a href="deposit_data_file.html"><strong aria-hidden="true">13.</strong> Deposit Data</a></li><li class="chapter-item expanded "><a href="bls_to_execution_change_file.html"><strong aria-hidden="true">14.</strong> BLS to Execution Change</a></li><li class="chapter-item expanded "><a href="bls_to_execution_change_keystore_file.html"><strong aria-hidden="true">15.</strong> BLS to Execution Change Keystore</a></li><li class="chapter-item expanded "><a href="signed_exit_transaction_file.html"><strong aria-hidden="true">16.</strong> Signed Exit Transaction</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="local_development.html" class="active"><strong aria-hidden="true">17.</strong> Local Development</a></li><li class="chapter-item expanded "><a href="release_process.html"><strong aria-hidden="true">18.</strong> Release Process</a></li><li class="chapter-item expanded "><a href="reporting_vulnerability.html"><strong aria-hidden="true">19.</strong> Reporting a Vulnerability</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -182,6 +182,13 @@
 <li><strong>Python 3.9+</strong>: The programming language required to run the tool. <a href="https://www.python.org/downloads/">Download Python</a></li>
 <li><strong>pip</strong>: Package installer for Python, which is included with Python 3.9+.</li>
 </ul>
+<p>On Windows, you'll need:</p>
+<ul>
+<li><strong>Git for Windows</strong>: Version control system to clone the repository. Configure it to associate <code>.sh</code> files with <code>bash</code>. <a href="https://git-scm.com/download/win">Download GfW</a></li>
+<li><strong>Windows Terminal</strong>: Optional but recommended command line console. Configure GfW to install a Git Bash profile. <a href="https://apps.microsoft.com/detail/9n0dx20hk701">Download Windows Terminal</a></li>
+<li><strong>Python 3.9+</strong>: The programming language required to run the tool. <a href="https://apps.microsoft.com/detail/9ncvdn91xzqp">Download Python</a></li>
+<li><strong>Visual Studio C++</strong>: The compiler required to build some of the dependencies of the tool. <a href="https://visualstudio.microsoft.com/vs/features/cplusplus/">Download VS C++</a></li>
+</ul>
 <h2 id="local-development-steps"><a class="header" href="#local-development-steps">Local Development Steps</a></h2>
 <ol>
 <li>
@@ -223,10 +230,14 @@ source .venv/bin/activate
 <p>Enable it for your <code>git commit</code> workflow:</p>
 <pre><code class="language-sh">pre-commit install
 </code></pre>
+<p>If you are using <code>uv</code>, you can also install it using:</p>
+<pre><code class="language-console">uv sync --all-extras
+uv run pre-commit install
+</code></pre>
 </li>
 </ol>
 <p><strong>To execute tests, you will need to install the test dependencies</strong>:</p>
-<pre><code class="language-sh">python3 -m pip install -r requirements_test.txt
+<pre><code class="language-sh">python3 -m pip install -r requirements.txt -r requirements_test.txt
 python3 -m pytest tests
 </code></pre>
 
@@ -234,10 +245,13 @@ python3 -m pytest tests
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="partial_deposit.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="signed_exit_transaction_file.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
+                            <a rel="next prefetch" href="release_process.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -245,10 +259,13 @@ python3 -m pytest tests
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="partial_deposit.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="signed_exit_transaction_file.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
+                    <a rel="next prefetch" href="release_process.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

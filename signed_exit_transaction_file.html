@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>New Mnemonic</title>
+        <title>Signed Exit Transaction</title>
 
 
         <!-- Custom HTML head -->
@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="landing.html"><strong aria-hidden="true">1.</strong> Ethstaker Deposit CLI</a></li><li class="chapter-item expanded "><a href="quick_setup.html"><strong aria-hidden="true">2.</strong> Quick Setup</a></li><li class="chapter-item expanded "><a href="other_install_options.html"><strong aria-hidden="true">3.</strong> Other Install Options</a></li><li class="chapter-item expanded affix "><li class="part-title">Commands</li><li class="chapter-item expanded "><a href="new_mnemonic.html" class="active"><strong aria-hidden="true">4.</strong> New Mnemonic</a></li><li class="chapter-item expanded "><a href="existing_mnemonic.html"><strong aria-hidden="true">5.</strong> Existing Mnemonic</a></li><li class="chapter-item expanded "><a href="generate_bls_to_execution_change.html"><strong aria-hidden="true">6.</strong> Generate BLS to Execution Change</a></li><li class="chapter-item expanded "><a href="generate_bls_to_execution_change_keystore.html"><strong aria-hidden="true">7.</strong> Generate BLS to Execution Change Keystore</a></li><li class="chapter-item expanded "><a href="exit_transaction_keystore.html"><strong aria-hidden="true">8.</strong> Exit Transaction Keystore</a></li><li class="chapter-item expanded "><a href="exit_transaction_mnemonic.html"><strong aria-hidden="true">9.</strong> Exit Transaction Mnemonic</a></li><li class="chapter-item expanded "><a href="partial_deposit.html"><strong aria-hidden="true">10.</strong> Partial Deposit</a></li><li class="chapter-item expanded "><a href="test_keystore.html"><strong aria-hidden="true">11.</strong> Test Keystore</a></li><li class="chapter-item expanded affix "><li class="part-title">File formats</li><li class="chapter-item expanded "><a href="keystore_file.html"><strong aria-hidden="true">12.</strong> Keystore</a></li><li class="chapter-item expanded "><a href="deposit_data_file.html"><strong aria-hidden="true">13.</strong> Deposit Data</a></li><li class="chapter-item expanded "><a href="bls_to_execution_change_file.html"><strong aria-hidden="true">14.</strong> BLS to Execution Change</a></li><li class="chapter-item expanded "><a href="bls_to_execution_change_keystore_file.html"><strong aria-hidden="true">15.</strong> BLS to Execution Change Keystore</a></li><li class="chapter-item expanded "><a href="signed_exit_transaction_file.html"><strong aria-hidden="true">16.</strong> Signed Exit Transaction</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="local_development.html"><strong aria-hidden="true">17.</strong> Local Development</a></li><li class="chapter-item expanded "><a href="release_process.html"><strong aria-hidden="true">18.</strong> Release Process</a></li><li class="chapter-item expanded "><a href="reporting_vulnerability.html"><strong aria-hidden="true">19.</strong> Reporting a Vulnerability</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="landing.html"><strong aria-hidden="true">1.</strong> Ethstaker Deposit CLI</a></li><li class="chapter-item expanded "><a href="quick_setup.html"><strong aria-hidden="true">2.</strong> Quick Setup</a></li><li class="chapter-item expanded "><a href="other_install_options.html"><strong aria-hidden="true">3.</strong> Other Install Options</a></li><li class="chapter-item expanded affix "><li class="part-title">Commands</li><li class="chapter-item expanded "><a href="new_mnemonic.html"><strong aria-hidden="true">4.</strong> New Mnemonic</a></li><li class="chapter-item expanded "><a href="existing_mnemonic.html"><strong aria-hidden="true">5.</strong> Existing Mnemonic</a></li><li class="chapter-item expanded "><a href="generate_bls_to_execution_change.html"><strong aria-hidden="true">6.</strong> Generate BLS to Execution Change</a></li><li class="chapter-item expanded "><a href="generate_bls_to_execution_change_keystore.html"><strong aria-hidden="true">7.</strong> Generate BLS to Execution Change Keystore</a></li><li class="chapter-item expanded "><a href="exit_transaction_keystore.html"><strong aria-hidden="true">8.</strong> Exit Transaction Keystore</a></li><li class="chapter-item expanded "><a href="exit_transaction_mnemonic.html"><strong aria-hidden="true">9.</strong> Exit Transaction Mnemonic</a></li><li class="chapter-item expanded "><a href="partial_deposit.html"><strong aria-hidden="true">10.</strong> Partial Deposit</a></li><li class="chapter-item expanded "><a href="test_keystore.html"><strong aria-hidden="true">11.</strong> Test Keystore</a></li><li class="chapter-item expanded affix "><li class="part-title">File formats</li><li class="chapter-item expanded "><a href="keystore_file.html"><strong aria-hidden="true">12.</strong> Keystore</a></li><li class="chapter-item expanded "><a href="deposit_data_file.html"><strong aria-hidden="true">13.</strong> Deposit Data</a></li><li class="chapter-item expanded "><a href="bls_to_execution_change_file.html"><strong aria-hidden="true">14.</strong> BLS to Execution Change</a></li><li class="chapter-item expanded "><a href="bls_to_execution_change_keystore_file.html"><strong aria-hidden="true">15.</strong> BLS to Execution Change Keystore</a></li><li class="chapter-item expanded "><a href="signed_exit_transaction_file.html" class="active"><strong aria-hidden="true">16.</strong> Signed Exit Transaction</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="local_development.html"><strong aria-hidden="true">17.</strong> Local Development</a></li><li class="chapter-item expanded "><a href="release_process.html"><strong aria-hidden="true">18.</strong> Release Process</a></li><li class="chapter-item expanded "><a href="reporting_vulnerability.html"><strong aria-hidden="true">19.</strong> Reporting a Vulnerability</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -173,63 +173,30 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="new-mnemonic"><a class="header" href="#new-mnemonic">new-mnemonic</a></h1>
-<div class="warning">
-Including sensitive arguments when executing CLI commands poses a security risk, as these values can be accessible through disk and shell history. This exposure can allow other users, including admins and malicious actors, to gain access to sensitive information, putting your funds at risk.
-</div>
-<h2 id="description"><a class="header" href="#description">Description</a></h2>
-<p>Generates a new BIP-39 mnemonic along with validator keystore and deposit files depending on how many validators you wish to create.</p>
-<h2 id="optional-arguments"><a class="header" href="#optional-arguments">Optional Arguments</a></h2>
-<ul>
-<li>
-<p><strong><code>--mnemonic_language</code></strong>: The language of the BIP-39 mnemonic. Options are: 'chinese_simplified', 'chinese_traditional', 'czech', 'english', 'french', 'italian', 'japanese', 'korean', 'portuguese', 'spanish'.</p>
-</li>
-<li>
-<p><strong><code>--chain</code></strong>: The chain to use for generating the deposit data. Options are: 'mainnet', 'sepolia', 'holesky', 'hoodi', 'ephemery', 'gnosis', or 'chiado'.</p>
-</li>
-<li>
-<p><strong><code>--num_validators</code></strong>: Number of validators to create.</p>
-</li>
-<li>
-<p><strong><code>--keystore_password</code></strong>: The password that is used to encrypt the provided keystore. Note: It's not your mnemonic password. <span class="warning"></span></p>
-</li>
-<li>
-<p><strong><code>--withdrawal_address</code></strong>: The Ethereum address that will be used in withdrawal. It typically starts with '0x' followed by 40 hexadecimal characters. Please make sure you have full control over the address you choose here. Once you set a withdrawal address on chain, it cannot be changed.</p>
-</li>
-<li>
-<p><strong><code>--compounding / --regular-withdrawal</code></strong>: Generates compounding validators with 0x02 withdrawal credentials for a 2048 ETH maximum effective balance or generate regular validators with 0x01 withdrawal credentials for a 32 ETH maximum effective balance. Use of this option requires a withdrawal address. This feature is only supported on networks that have undergone the Pectra fork. Defaults to regular withdrawal.</p>
-</li>
-<li>
-<p><strong><code>--amount</code></strong>: The amount to deposit to these validators in ether denomination. Must be at least 1 ether and can not have greater precision than 1 gwei. Use of this option requires compounding validators. Defaults to 32 ether.</p>
-</li>
-<li>
-<p><strong><code>--pbkdf2</code></strong>: Will use pbkdf2 key encryption instead of scrypt for generated keystore files as defined in <a href="https://eips.ethereum.org/EIPS/eip-2335#decryption-key">EIP-2335</a>. This can be a good alternative if you intend to work with a large number of keys, as it can improve performance. pbkdf2 encryption is, however, less secure than scrypt. You should only use this option if you understand the associated risks and have familiarity with encryption.</p>
-</li>
-<li>
-<p><strong><code>--folder</code></strong>: The folder where keystore and deposit data files will be saved.</p>
-</li>
-<li>
-<p><strong><code>--devnet_chain_setting</code></strong>: The custom chain setting of a devnet or testnet. Note that it will override your <code>--chain</code> choice. This should be a JSON string containing an object with the following keys: network_name, genesis_fork_version, exit_fork_version, genesis_validator_root, multiplier, min_activation_amount and min_deposit_amount.</p>
-</li>
-</ul>
-<h2 id="output-files"><a class="header" href="#output-files">Output files</a></h2>
-<p>A successful call to this command will result in one or many <a href="keystore_file.html">keystore files</a> created, one per validator created, and one <a href="deposit_data_file.html">deposit data file</a> created. The amount for each deposit in the deposit data file should always be 32 Ethers (<code>32000000000</code> in GWEI) with this command.</p>
-<h2 id="example-usage"><a class="header" href="#example-usage">Example Usage</a></h2>
-<pre><code class="language-sh">./deposit new-mnemonic
+                        <h1 id="signed-exit-transaction-file"><a class="header" href="#signed-exit-transaction-file">Signed Exit Transaction file</a></h1>
+<p>A signed exit transaction file is created when calling the <strong><a href="exit_transaction_keystore.html">exit-transaction-keystore</a></strong> or the <strong><a href="exit_transaction_mnemonic.html">exit-transaction-mnemonic</a></strong> command.</p>
+<p>The signed exit transaction file is a JSON file. It contains a single message to exit a validator. The format of the signed exit transaction file is loosly based on the input for the POST <code>/eth/v1/beacon/pool/voluntary_exits</code> <a href="https://ethereum.github.io/beacon-APIs/#/Beacon/submitPoolVoluntaryExit">API endpoint</a> as defined by <a href="https://github.com/ethereum/beacon-APIs">the Ethereum Beacon APIs</a>. Part of this content is based on the <a href="https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#signedvoluntaryexit">SignedVoluntaryExit</a> signed envelope as defined in the <a href="https://github.com/ethereum/consensus-specs/">Ethereum Consensus Specifications</a>.</p>
+<h2 id="broadcasting"><a class="header" href="#broadcasting">Broadcasting</a></h2>
+<p>If you have access to a beacon node client running on your target network, you can publish this message simply by calling the POST <code>/eth/v1/beacon/pool/voluntary_exits</code> <a href="https://ethereum.github.io/beacon-APIs/#/Beacon/submitPoolVoluntaryExit">API endpoint</a> and passing the content of the signed exit transaction file as the payload. You can also use <a href="https://beaconcha.in/tools/broadcast">the Beaconcha.in Broadcast Signed Messages tool</a> which might be easier for most users.</p>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<pre><code class="language-JSON">{
+  "message":{
+    "epoch":"0",
+    "validator_index":"1804776"
+  },
+  "signature":"0x97fa465cf1081755002e35fab245bd2872381b07cbfa4df245a13e3834aba83a347f5c2a36a34760e9fcc754dd862de700d103b1cb0d5d9ce293242ebf9ad44a6073e5c4794424428a8f983513d88e6ff6ddccbde7b3e0ea43554a0b856f3199"
+}
 </code></pre>
-<h2 id="note"><a class="header" href="#note">Note</a></h2>
-<p>The newly generated mnemonic <strong>must</strong> be written down, on a piece of paper or transferred to steel. The clipboard is cleared when this command finishes. If the mnemonic is lost and the validator does not have a withdrawal address, funds <strong>cannot</strong> be recovered.</p>
-<p>To make a deposit for a different amount other than 32 ETH, you need to have an existing keystore file or create one by using either the above command or <strong><a href="existing_mnemonic.html">existing-mnemonic</a></strong>. Then, use the <strong><a href="partial_deposit.html">partial-deposit</a></strong> command to specify the desired amount for each validator.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="other_install_options.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="bls_to_execution_change_keystore_file.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="existing_mnemonic.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="local_development.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -239,11 +206,11 @@ Including sensitive arguments when executing CLI commands poses a security risk,
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="other_install_options.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="bls_to_execution_change_keystore_file.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="existing_mnemonic.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="local_development.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
