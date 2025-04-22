@@ -24,10 +24,13 @@ name = "ethstaker_deposit"
 description = "Secure key generation for deposits"
 readme = "README.md"
 dependencies = [
+    "annotated-types==0.7.0",
     "click==8.1.8",
     "eth-typing==5.2.1",
     "eth-utils==5.2.0",
     "pycryptodome==3.22.0",
+    "pydantic==2.11.3",
+    "pydantic-core==2.33.1",
     "pyperclip==1.9.0",
     "py-ecc==7.0.1",
     "ssz==0.5.2",
@@ -40,6 +43,7 @@ dependencies = [
     "pyrsistent==0.20.0",
     "six==1.17.0",
     "toolz==1.0.0",
+    "typing-inspection==0.4.0",
 ]
 requires-python = ">=3.9,<4"
 dynamic = ["version"]
