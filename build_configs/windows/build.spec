@@ -1,9 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import copy_metadata
 
 datas = [
     ('..\\..\\ethstaker_deposit\\key_handling\\key_derivation\\word_lists\\*.txt', '.\\ethstaker_deposit\\key_handling\\key_derivation\\word_lists'),
     ('..\\..\\ethstaker_deposit\\intl', '.\\ethstaker_deposit\\intl'),
 ]
+datas += copy_metadata('py_ecc')
+datas += copy_metadata('ssz')
 
 block_cipher = None
 
