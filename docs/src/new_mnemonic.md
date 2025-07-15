@@ -38,6 +38,6 @@ A successful call to this command will result in one or many [keystore files](ke
 
 ## Note
 
-The newly generated mnemonic **must** be written down, on a piece of paper or transferred to steel. The clipboard is cleared when this command finishes. If the mnemonic is lost and the validator does not have a withdrawal address, funds **cannot** be recovered.
+The newly generated mnemonic **must** be written down, on a piece of paper or transferred to steel. The application will attempt to clear the clipboard when this command finishes. If the mnemonic is lost and the validator does not have a withdrawal address, funds **cannot** be recovered.
 
 To make a deposit for a different amount other than 32 ETH, you need to have an existing keystore file or create one by using either the above command or **[existing-mnemonic](existing_mnemonic.md)**. Then, use the **[partial-deposit](partial_deposit.md)** command to specify the desired amount for each validator.

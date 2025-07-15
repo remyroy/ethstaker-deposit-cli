@@ -25,6 +25,6 @@
             "prompt": "Enter the index (key number) you wish to start generating more keys from. For example, if you've generated 4 keys in the past, you'd enter 4 here.",
             "confirm": "Please repeat the validator start index to confirm"
         },
-        "msg_confirm_clipboard_clearing": "WARNING: Your clipboard will be CLEARED. Press any key to clear the clipboard."
+        "msg_confirm_clipboard_clearing": "WARNING: Your clipboard will be CLEARED. Some applications or configurations may prevent this. Press any key to clear the clipboard."
     }
 }
