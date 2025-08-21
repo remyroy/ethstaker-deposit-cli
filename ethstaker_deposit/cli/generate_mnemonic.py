@@ -23,7 +23,6 @@ from ethstaker_deposit.utils.intl import (
     load_text,
     get_first_options,
 )
-from ethstaker_deposit.utils.terminal import clear_terminal
 from ethstaker_deposit.utils.file_handling import (
     sensitive_opener,
 )
@@ -45,7 +44,8 @@ languages = get_first_options(MNEMONIC_LANG_OPTIONS)
     ),
     default=lambda: load_text(['arg_mnemonic_language', 'default'], func='generate_mnemonic'),
     help=lambda: load_text(['arg_mnemonic_language', 'help'], func='generate_mnemonic'),
-    prompt=choice_prompt_func(lambda: load_text(['arg_mnemonic_language', 'prompt'], func='generate_mnemonic'), languages),
+    prompt=choice_prompt_func(
+        lambda: load_text(['arg_mnemonic_language', 'prompt'], func='generate_mnemonic'), languages),
     type=str,
 )
 @jit_option(
@@ -53,8 +53,6 @@ languages = get_first_options(MNEMONIC_LANG_OPTIONS)
     help=lambda: load_text(['arg_output_file', 'help'], func='generate_mnemonic'),
     type=click.Path(exists=False, file_okay=True, dir_okay=False, writable=True, resolve_path=True)
 )
-
-
 def generate_mnemonic(ctx: click.Context, mnemonic_language: str, **kwargs: Any) -> None:
     mnemonic = get_mnemonic(language=mnemonic_language, words_path=WORD_LISTS_PATH)
 
@@ -91,10 +89,9 @@ def generate_mnemonic(ctx: click.Context, mnemonic_language: str, **kwargs: Any)
                 load_text(['arg_output_file', 'err_exception'], func='generate_mnemonic'),
                 str(e)), err=True)
             sys.exit(1)
-        
+
     else:
         # We are displaying the mnemonic on screen
         if not config.non_interactive:
             click.echo('\n%s\n' % load_text(['msg_mnemonic_presentation']))
         click.echo(mnemonic)
-    
