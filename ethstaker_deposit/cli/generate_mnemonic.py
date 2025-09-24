@@ -95,6 +95,6 @@ def generate_mnemonic(ctx: click.Context, mnemonic_language: str, **kwargs: Any)
         if not config.non_interactive:
             click.echo('\n%s\n' % load_text(['msg_mnemonic_presentation']))
         click.echo(mnemonic)
-    
+
     if not config.non_interactive:
         click.echo('\n%s' % load_text(['msg_mnemonic_next']))
