@@ -14,6 +14,7 @@ from ethstaker_deposit.utils.constants import (
     WORD_LISTS_PATH,
 )
 
+
 @pytest.mark.parametrize(
     'language', MNEMONIC_LANG_OPTIONS.keys()
 )
@@ -34,6 +35,7 @@ def test_normal_generate_mnemonic(language) -> None:
 
     assert reconstruct_mnemonic(output_mnemonic, WORD_LISTS_PATH, language) == output_mnemonic
 
+
 @pytest.mark.parametrize(
     'language', MNEMONIC_LANG_OPTIONS.keys()
 )
@@ -44,7 +46,7 @@ def test_generate_mnemonic_to_file(language) -> None:
     my_folder_path = os.path.join(os.getcwd(), 'TESTING_TEMP_FOLDER')
     if not os.path.exists(my_folder_path):
         os.mkdir(my_folder_path)
-    
+
     output_file = os.path.join(my_folder_path, 'output')
 
     runner = CliRunner()
@@ -63,11 +65,12 @@ def test_generate_mnemonic_to_file(language) -> None:
 
     with open(output_file, 'r', encoding='utf-8') as f:
         output_mnemonic = f.read(2000).strip()
-    
+
     assert reconstruct_mnemonic(output_mnemonic, WORD_LISTS_PATH, language) == output_mnemonic
 
     os.remove(output_file)
     os.rmdir(my_folder_path)
+
 
 @pytest.mark.parametrize(
     'language', MNEMONIC_LANG_OPTIONS.keys()
@@ -86,7 +89,9 @@ def test_generate_mnemonic_interactive(language) -> None:
 
     assert result.exit_code == 0
 
-    re_match = re.search(r'This is your randomly generated mnemonic\:\n\n(?P<mnemonic>([^ ]+ ){23}[^ ]+)\n', result.output)
+    re_match = re.search(
+        r'This is your randomly generated mnemonic\:\n\n(?P<mnemonic>([^ ]+ ){23}[^ ]+)\n',
+        result.output)
 
     assert (re_match is not None)
 
