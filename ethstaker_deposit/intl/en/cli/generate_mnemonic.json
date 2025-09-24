@@ -1,7 +1,7 @@
 {
     "generate_mnemonic": {
         "arg_generate_mnemonic": {
-            "help": "Generate a new random mnemonic"
+            "help": "Generate a new random mnemonic. If you also want to create your validator keystore and deposit files, you should be using the new-mnemonic or the existing-mnemonic command instead."
         },
         "arg_mnemonic_language": {
             "default": "english",
@@ -16,7 +16,8 @@
             "err_os": "Error while trying to write file: An OS-related error occurred.",
             "err_exception": "Error while trying to write file: An unexpected error occurred."
         },
-        "msg_mnemonic_presentation": "This is your randomly generated mnemonic.",
-        "msg_mnemonic_file_written": "Your randomly generated mnemonic was written in"
+        "msg_mnemonic_presentation": "This is your randomly generated mnemonic:",
+        "msg_mnemonic_file_written": "Your randomly generated mnemonic was written in",
+        "msg_mnemonic_next": "If you also want to generate your validator keystore and deposit files you can now use the existing-mnemonic command."
     }
 }
