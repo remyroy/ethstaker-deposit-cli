@@ -3,7 +3,7 @@
 {{#include ./snippet/warning_message.md}}
 
 ## Description
-Generates a new BIP-39 mnemonic along with validator keystore and deposit files depending on how many validators you wish to create.
+Generates a new random BIP-39 mnemonic along with validator keystore and deposit files depending on how many validators you wish to create.
 
 ## Optional Arguments
 
