@@ -244,6 +244,30 @@ def test_validate_devnet_chain_setting_json() -> None:
     with pytest.raises(ValidationError):
         assert validate_devnet_chain_setting_json(json.dumps(invalid_too_many_keys_devnet_chain)) is False
 
+    # Invalid devnet chain value with zero multiplier
+    invalid_zero_multiplier_devnet_chain = {
+        "network_name": "hoodicopy",
+        "genesis_fork_version": "20000910",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f",
+        "multiplier": "0"
+    }
+
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json(json.dumps(invalid_zero_multiplier_devnet_chain)) is False
+
+    # Invalid devnet chain value with negative multiplier
+    invalid_negative_multiplier_devnet_chain = {
+        "network_name": "hoodicopy",
+        "genesis_fork_version": "20000910",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f",
+        "multiplier": "-4"
+    }
+
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json(json.dumps(invalid_negative_multiplier_devnet_chain)) is False
+
     # Invalid devnet chain with invalid JSON string
     with pytest.raises(ValidationError):
         assert validate_devnet_chain_setting_json('aaz') is False
