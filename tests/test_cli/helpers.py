@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 
 from ethstaker_deposit.key_handling.keystore import Keystore
 from ethstaker_deposit.utils.constants import (
@@ -39,16 +40,10 @@ def clean_exit_transaction_folder(my_folder_path: str) -> None:
 def clean_folder(primary_folder_path: str, sub_folder_path: str, ignore_primary: bool = False) -> None:
     if not os.path.exists(sub_folder_path):
         return
-
-    _, _, key_files = next(os.walk(sub_folder_path))
-    for key_file_name in key_files:
-        key_file_path = os.path.join(sub_folder_path, key_file_name)
-        # Required on Windows to delete the read-only files created by our sensitive_opener
-        os.chmod(key_file_path, 0o666)
-        os.remove(key_file_path)
-    os.rmdir(sub_folder_path)
+    
+    shutil.rmtree(sub_folder_path)
     if not ignore_primary:
-        os.rmdir(primary_folder_path)
+        shutil.rmtree(primary_folder_path)
 
 
 def get_uuid(key_file: str) -> str:
