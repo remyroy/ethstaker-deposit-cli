@@ -40,7 +40,7 @@ def clean_exit_transaction_folder(my_folder_path: str) -> None:
 def clean_folder(primary_folder_path: str, sub_folder_path: str, ignore_primary: bool = False) -> None:
     if not os.path.exists(sub_folder_path):
         return
-    
+
     shutil.rmtree(sub_folder_path)
     if not ignore_primary:
         shutil.rmtree(primary_folder_path)
