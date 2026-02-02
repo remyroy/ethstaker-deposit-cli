@@ -2,6 +2,7 @@ import click
 import concurrent.futures
 import os
 import time
+import sys
 
 from typing import Any, Sequence, Dict, Optional
 from ethstaker_deposit.cli.existing_mnemonic import load_mnemonic_arguments_decorator
@@ -129,6 +130,10 @@ def exit_transaction_mnemonic(
 
     # Get chain setting
     chain_setting = devnet_chain_setting if devnet_chain_setting is not None else get_chain_setting(chain)
+
+    if chain_setting.GENESIS_VALIDATORS_ROOT is None:
+        click.echo(load_text(['arg_devnet_chain_setting', 'missing_genesis_validators_root']), err=True)
+        sys.exit(1)
 
     num_keys = len(validator_indices)
     key_indices = range(validator_start_index, validator_start_index + num_keys)
