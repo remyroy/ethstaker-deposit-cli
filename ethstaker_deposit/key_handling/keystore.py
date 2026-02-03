@@ -5,6 +5,7 @@ from dataclasses import (
     field as dataclass_field
 )
 import json
+from jsonschema import validate as js_validate
 
 from py_ecc.bls import G2ProofOfPossession as bls
 from secrets import randbits
@@ -26,6 +27,73 @@ from ethstaker_deposit.utils.file_handling import (
 )
 
 hexdigits = set('0123456789abcdef')
+
+EIP_2335_JSON_SCHEMA = {
+    "$ref": "#/definitions/Keystore",
+    "definitions": {
+        "Keystore": {
+            "type": "object",
+            "properties": {
+                "crypto": {
+                    "type": "object",
+                    "properties": {
+                        "kdf": {
+                            "$ref": "#/definitions/Module"
+                        },
+                        "checksum": {
+                            "$ref": "#/definitions/Module"
+                        },
+                        "cipher": {
+                            "$ref": "#/definitions/Module"
+                        }
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "pubkey": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "crypto",
+                "path",
+                "uuid",
+                "version"
+            ],
+            "title": "Keystore"
+        },
+        "Module": {
+            "type": "object",
+            "properties": {
+                "function": {
+                    "type": "string"
+                },
+                "params": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "function",
+                "message",
+                "params"
+            ]
+        }
+    }
+}
 
 
 def encode_bytes(obj: Union[str, Dict[str, Any]]) -> Union[bytes, str, Dict[str, Any]]:
@@ -104,6 +172,7 @@ class Keystore(BytesDataclass):
 
     @classmethod
     def from_json(cls, json_dict: Dict[Any, Any]) -> 'Keystore':
+        js_validate(instance=json_dict, schema=EIP_2335_JSON_SCHEMA)
         crypto = KeystoreCrypto.from_json(json_dict['crypto'])
         path = json_dict['path']
         uuid = json_dict['uuid']

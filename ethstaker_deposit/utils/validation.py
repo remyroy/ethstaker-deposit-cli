@@ -5,6 +5,7 @@ import re
 import sys
 import concurrent.futures
 from typing import Any, Dict, Sequence, Optional
+from jsonschema.exceptions import ValidationError as JSValidationError
 
 from click.types import BoolParamType
 from click.exceptions import BadParameter
@@ -392,8 +393,10 @@ def validate_keystore_file(file_path: str) -> Keystore:
     except FileNotFoundError:
         # Required as captive_prompt_callback does not utilize click type argument for validation
         raise ValidationError(load_text(['err_file_not_found']) + '\n')
+    except JSValidationError as err:
+        raise ValidationError(load_text(['err_invalid_keystore_file']) + '\n\n' + str(err) + '\n')
     except Exception:
-        raise ValidationError(load_text(['err_invalid_keystore_file']) + '\n')
+        raise ValidationError(load_text(['err_unknown_keystore_file']) + '\n')
     return saved_keystore
 
 
