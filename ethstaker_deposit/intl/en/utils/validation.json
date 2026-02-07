@@ -26,7 +26,8 @@
         "err_invalid_amount": "Invalid amount provided. Please provide a value of at least 1 ether of how much you wish to deposit.",
         "err_not_gwei_denomination": "Invalid amount provided. Please provide a value can not have precision beyond 1 gwei.",
         "err_min_deposit": "Invalid amount provided. Please provide a value of at least 1 ether.",
-        "err_max_deposit": "Invalid amount provided. The max deposit amount is 2048 ether. Please provide a lesser or equal amount."
+        "err_max_deposit": "Invalid amount provided. The max deposit amount is 2048 ether. Please provide a lesser or equal amount.",
+        "err_zero_multiplier": "This chain setting is using a multiplier with a value of zero which is invalid."
     },
     "validate_bls_withdrawal_credentials": {
         "err_is_already_01_form": "The given withdrawal credentials is already in 0x01 form. Have you already set the withdrawal address?",
@@ -58,6 +59,8 @@
         "err_devnet_known_genesis_fork_version": "The devnet chain setting is using a known genesis fork version from an existing network.",
         "err_devnet_chain_setting_invalid_json": "Invalid JSON string for devnet_chain_setting. Decoding the JSON string was impossible. Make sure to pass a valid JSON string.",
         "err_devnet_chain_setting_key_length": "Invalid JSON string for devnet_chain_setting. The root object should only contain 3, 4, 5 or 6 keys.",
-        "err_devnet_chain_setting_unknown_keys": "The devnet chain setting contains unrecognized keys."
+        "err_devnet_chain_setting_unknown_keys": "The devnet chain setting contains unrecognized keys.",
+        "err_devnet_chain_setting_zero_multiplier": "Invalid multiplier value in devnet chain setting. It cannot be zero.",
+        "err_devnet_chain_setting_negative_multiplier": "Invalid multiplier value in devnet chain setting. It cannot be negative."
     }
 }

@@ -127,6 +127,10 @@ def exit_transaction_keystore(
     # Get chain setting
     chain_setting = devnet_chain_setting if devnet_chain_setting is not None else get_chain_setting(chain)
 
+    if chain_setting.GENESIS_VALIDATORS_ROOT is None:
+        click.echo(load_text(['arg_devnet_chain_setting', 'missing_genesis_validators_root']), err=True)
+        sys.exit(1)
+
     signed_exit = exit_transaction_generation(
         chain_setting=chain_setting,
         signing_key=signing_key,

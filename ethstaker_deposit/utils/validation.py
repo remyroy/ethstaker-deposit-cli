@@ -239,6 +239,9 @@ def validate_deposit_amount(amount: str, **kwargs: Dict[str, Any]) -> int:
         if amount_gwei < min_amount * ETH2GWEI:
             raise ValidationError(load_text(['err_min_deposit']))
 
+        if chain_setting.MULTIPLIER == 0:
+            raise ValidationError(load_text(['err_zero_multiplier']))
+
         if amount_gwei > MAX_DEPOSIT_AMOUNT / chain_setting.MULTIPLIER:
             raise ValidationError(load_text(['err_max_deposit']))
 
@@ -527,6 +530,15 @@ def validate_devnet_chain_setting_json(json_value: str) -> bool:
 
         if len(devnet_chain_setting_dict) not in (3, 4, 5, 6, 7):
             raise ValidationError(load_text(['err_devnet_chain_setting_key_length']) + '\n')
+
+        if 'multiplier' in devnet_chain_setting_dict:
+            multiplier = int(devnet_chain_setting_dict['multiplier'])
+
+            if multiplier == 0:
+                raise ValidationError(load_text(['err_devnet_chain_setting_zero_multiplier']) + '\n')
+
+            if multiplier < 0:
+                raise ValidationError(load_text(['err_devnet_chain_setting_negative_multiplier']) + '\n')
 
         allowed_keys = set(required_keys + optional_keys)
         unknown_keys = set(devnet_chain_setting_dict) - allowed_keys
