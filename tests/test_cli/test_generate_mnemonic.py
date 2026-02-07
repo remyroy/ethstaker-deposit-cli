@@ -14,6 +14,8 @@ from ethstaker_deposit.utils.constants import (
     WORD_LISTS_PATH,
 )
 
+from .helpers import clean_folder
+
 
 @pytest.mark.parametrize(
     'language', MNEMONIC_LANG_OPTIONS.keys()
@@ -68,8 +70,7 @@ def test_generate_mnemonic_to_file(language) -> None:
 
     assert reconstruct_mnemonic(output_mnemonic, WORD_LISTS_PATH, language) == output_mnemonic
 
-    os.remove(output_file)
-    os.rmdir(my_folder_path)
+    clean_folder(my_folder_path, my_folder_path, True)
 
 
 @pytest.mark.parametrize(

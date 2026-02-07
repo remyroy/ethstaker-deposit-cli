@@ -21,7 +21,4 @@ def sensitive_opener(path: Union[str, bytes, 'os.PathLike[Any]'], flags: int) ->
     Opener to be used with the open built-in function to correctly assign permissions to sensitive
     files when created and written to for the first time.
     """
-    if os.name == 'posix':
-        return os.open(path, flags | os.O_EXCL, 0o400)
-    else:
-        return os.open(path, flags)
+    return os.open(path, flags | os.O_EXCL, 0o400)
