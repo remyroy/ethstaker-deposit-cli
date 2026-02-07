@@ -190,7 +190,7 @@ def test_validate_devnet_chain_setting_json() -> None:
     # Correct devnet chain value
     corret_devnet_chain = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000",
         "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f"
     }
@@ -216,15 +216,25 @@ def test_validate_devnet_chain_setting_json() -> None:
     # Correct devnet chain value missing 1 optional key
     correct_missing_genesis_validator_root_devnet_chain = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000"
     }
     assert validate_devnet_chain_setting_json(json.dumps(correct_missing_genesis_validator_root_devnet_chain)) is True
 
+    # Invalid devnet chain value with known genesis fork version
+    invalid_known_genesis_fork_version_devnet_chain = {
+        "network_name": "toorealhoodicopy",
+        "genesis_fork_version": "10000910",
+        "exit_fork_version": "04017000",
+        "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f"
+    }
+    with pytest.raises(ValidationError):
+        assert validate_devnet_chain_setting_json(json.dumps(invalid_known_genesis_fork_version_devnet_chain)) is False
+
     # Invalid devnet chain value with wrong fourth key name
     invalid_fourth_key_devnet_chain = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000",
         "genesis_validator": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f"
     }
@@ -234,7 +244,7 @@ def test_validate_devnet_chain_setting_json() -> None:
     # Invalid devnet chain value with too many keys
     invalid_too_many_keys_devnet_chain = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000",
         "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f",
         "multiplier": "1",
@@ -254,7 +264,7 @@ def test_validate_devnet_chain_setting_json() -> None:
 
     correct_devnet_chain_with_multiplier = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000",
         "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f",
         "multiplier": "1"
@@ -263,7 +273,7 @@ def test_validate_devnet_chain_setting_json() -> None:
 
     correct_devnet_chain_with_multiplier_and_min_deposit_amount = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000",
         "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f",
         "multiplier": "1",
@@ -274,7 +284,7 @@ def test_validate_devnet_chain_setting_json() -> None:
 
     invalid_devnet_chain_with_min_deposit_amount_and_wrong_key = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000",
         "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f",
         "min_deposit_amount": "1",

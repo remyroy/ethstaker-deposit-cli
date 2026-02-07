@@ -447,7 +447,7 @@ def test_partial_deposit_custom_network(amount: str) -> None:
 
     devnet_chain = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000",
         "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f"
     }
@@ -503,7 +503,7 @@ def test_invalid_custom_network_json() -> None:
 
     devnet_chain = {
         "network_name": "hoodicopy",
-        "genesis_fork_version": "10000910",
+        "genesis_fork_version": "20000910",
         "exit_fork_version": "04017000",
         "genesis_validator_root": "212f13fc4df078b6cb7db228f1c8307566dcecf900867401a92023d7ba99cb5f"
     }

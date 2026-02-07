@@ -45,7 +45,17 @@ from ethstaker_deposit.utils.constants import (
     MAX_DEPOSIT_AMOUNT,
 )
 from ethstaker_deposit.utils.crypto import SHA256
-from ethstaker_deposit.settings import BaseChainSetting, get_chain_setting, get_devnet_chain_setting
+from ethstaker_deposit.settings import (
+    BaseChainSetting,
+    get_chain_setting,
+    get_devnet_chain_setting,
+    ALL_CHAINS
+)
+
+ALL_FORK_VERSIONS: dict[bytes, str] = {
+    settings.GENESIS_FORK_VERSION: network_name
+    for network_name, settings in ALL_CHAINS.items()
+}
 
 
 #
@@ -509,6 +519,11 @@ def validate_devnet_chain_setting_json(json_value: str) -> bool:
 
         if not all_keys:
             raise ValidationError(load_text(['err_devnet_chain_setting_missing_keys']) + '\n')
+
+        genesis_fork_version = decode_hex(devnet_chain_setting_dict['genesis_fork_version'])
+        if genesis_fork_version in ALL_FORK_VERSIONS:
+            known_network = ALL_FORK_VERSIONS[genesis_fork_version]
+            raise ValidationError(load_text(['err_devnet_known_genesis_fork_version']) + f' ({known_network})' + '\n')
 
         if len(devnet_chain_setting_dict) not in (3, 4, 5, 6, 7):
             raise ValidationError(load_text(['err_devnet_chain_setting_key_length']) + '\n')
