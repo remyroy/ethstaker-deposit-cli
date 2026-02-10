@@ -1,6 +1,7 @@
 import os
 import json
 import pytest
+from jsonschema.exceptions import ValidationError as JSValidationError
 
 from ethstaker_deposit.key_handling.keystore import (
     Keystore,
@@ -75,3 +76,151 @@ def test_encrypt_decrypt_incorrect_password() -> None:
 )
 def test_process_password(password: str, processed_password: bytes) -> None:
     assert Keystore._process_password(password) == processed_password
+
+
+def test_keystore_validation_missing_element() -> None:
+    incorrect_json = {
+    "crypto": {
+        "kdf": {
+            "function": "scrypt",
+            "params": {
+                "dklen": 32,
+                "n": 262144,
+                "r": 8,
+                "p": 1,
+                "salt": "142040bf2b106694c7652e974f2063ef1a64daf6c0035a37f947dca9670d5025"
+            },
+            "message": ""
+        },
+        "checksum": {
+            "function": "sha256",
+            "params": {}
+        },
+        "cipher": {
+            "function": "aes-128-ctr",
+            "params": {
+                "iv": "f8f201877665b43f21efd17e087c61eb"
+            },
+            "message": "3cb260b57ed4aee69762c3a20948f016ff8e357b8ea2ef75f603626d941ea18c"
+        }
+    },
+    "description": "",
+    "pubkey": "a610be328703ca298317a87b8a5b1de081ab5b32e63af79d16a9078510203c93b5d0c14e1232c361a35e4abb1977a643",
+    "path": "m/12381/3600/0/0/0",
+    "uuid": "1484b6f7-467d-4718-bd4b-32c9b45fde56",
+    "version": 4
+}
+    with pytest.raises(JSValidationError):
+        assert Keystore.from_json(incorrect_json) == 1
+
+
+def test_keystore_validation_wrong_type() -> None:
+    incorrect_json = {
+    "crypto": {
+        "kdf": {
+            "function": "scrypt",
+            "params": {
+                "dklen": 32,
+                "n": "262144",
+                "r": 8,
+                "p": 1,
+                "salt": "142040bf2b106694c7652e974f2063ef1a64daf6c0035a37f947dca9670d5025"
+            },
+            "message": ""
+        },
+        "checksum": {
+            "function": "sha256",
+            "params": {},
+            "message": "d81cfb226ef615e4b09f9e84ab2b9d4b5062d1092224651b2a4dd9f4613d3454"
+        },
+        "cipher": {
+            "function": "aes-128-ctr",
+            "params": {
+                "iv": "f8f201877665b43f21efd17e087c61eb"
+            },
+            "message": "3cb260b57ed4aee69762c3a20948f016ff8e357b8ea2ef75f603626d941ea18c"
+        }
+    },
+    "description": "",
+    "pubkey": "a610be328703ca298317a87b8a5b1de081ab5b32e63af79d16a9078510203c93b5d0c14e1232c361a35e4abb1977a643",
+    "path": "m/12381/3600/0/0/0",
+    "uuid": "1484b6f7-467d-4718-bd4b-32c9b45fde56",
+    "version": 4
+}
+    with pytest.raises(JSValidationError):
+        assert Keystore.from_json(incorrect_json) == 1
+
+
+def test_keystore_validation_too_many_args() -> None:
+    incorrect_json = {
+    "crypto": {
+        "kdf": {
+            "function": "scrypt",
+            "params": {
+                "dklen": 32,
+                "n": 262144,
+                "r": 8,
+                "p": 1,
+                "salt": "142040bf2b106694c7652e974f2063ef1a64daf6c0035a37f947dca9670d5025"
+            },
+            "message": ""
+        },
+        "checksum": {
+            "function": "sha256",
+            "params": {},
+            "message": "d81cfb226ef615e4b09f9e84ab2b9d4b5062d1092224651b2a4dd9f4613d3454"
+        },
+        "cipher": {
+            "function": "aes-128-ctr",
+            "params": {
+                "iv": "f8f201877665b43f21efd17e087c61eb",
+                "p": 1
+            },
+            "message": "3cb260b57ed4aee69762c3a20948f016ff8e357b8ea2ef75f603626d941ea18c"
+        }
+    },
+    "description": "",
+    "pubkey": "a610be328703ca298317a87b8a5b1de081ab5b32e63af79d16a9078510203c93b5d0c14e1232c361a35e4abb1977a643",
+    "path": "m/12381/3600/0/0/0",
+    "uuid": "1484b6f7-467d-4718-bd4b-32c9b45fde56",
+    "version": 4
+}
+    with pytest.raises(JSValidationError):
+        assert Keystore.from_json(incorrect_json) == 1
+
+
+def test_keystore_validation_wrong_version() -> None:
+    incorrect_json = {
+    "crypto": {
+        "kdf": {
+            "function": "scrypt",
+            "params": {
+                "dklen": 32,
+                "n": "262144",
+                "r": 8,
+                "p": 1,
+                "salt": "142040bf2b106694c7652e974f2063ef1a64daf6c0035a37f947dca9670d5025"
+            },
+            "message": ""
+        },
+        "checksum": {
+            "function": "sha256",
+            "params": {},
+            "message": "d81cfb226ef615e4b09f9e84ab2b9d4b5062d1092224651b2a4dd9f4613d3454"
+        },
+        "cipher": {
+            "function": "aes-128-ctr",
+            "params": {
+                "iv": "f8f201877665b43f21efd17e087c61eb"
+            },
+            "message": "3cb260b57ed4aee69762c3a20948f016ff8e357b8ea2ef75f603626d941ea18c"
+        }
+    },
+    "description": "",
+    "pubkey": "a610be328703ca298317a87b8a5b1de081ab5b32e63af79d16a9078510203c93b5d0c14e1232c361a35e4abb1977a643",
+    "path": "m/12381/3600/0/0/0",
+    "uuid": "1484b6f7-467d-4718-bd4b-32c9b45fde56",
+    "version": 2
+}
+    with pytest.raises(JSValidationError):
+        assert Keystore.from_json(incorrect_json) == 1

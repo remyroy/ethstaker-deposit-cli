@@ -47,7 +47,8 @@
     },
     "validate_keystore_file": {
         "err_file_not_found": "No file was found. Please verify the provided path and try again.",
-        "err_invalid_keystore_file": "The discovered file is not the correct keystore file format. Please verify the provided path is to a keystore file and try again."
+        "err_invalid_keystore_file": "The discovered file is not the correct keystore file format. Please verify the provided path is to a keystore file and try again.",
+        "err_unknown_keystore_file": "There was an unexpected error trying to parse or load the keystore file. Please verify the provided path is to a keystore file and try again."
     },
     "validate_devnet_chain_setting": {
         "err_invalid_devnet_chain_setting": "Invalid JSON string for devnet_chain_setting. It should be a valide JSON object that contains at least the following keys: network_name, genesis_fork_version and exit_fork_version.",

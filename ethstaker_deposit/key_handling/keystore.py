@@ -5,6 +5,7 @@ from dataclasses import (
     field as dataclass_field
 )
 import json
+from jsonschema import validate as js_validate
 
 from py_ecc.bls import G2ProofOfPossession as bls
 from secrets import randbits
@@ -24,6 +25,7 @@ from ethstaker_deposit.utils.constants import (
 from ethstaker_deposit.utils.file_handling import (
     sensitive_opener,
 )
+from ethstaker_deposit.schema.keystore import KEYSTORE_JSON_SCHEMA
 
 hexdigits = set('0123456789abcdef')
 
@@ -104,6 +106,7 @@ class Keystore(BytesDataclass):
 
     @classmethod
     def from_json(cls, json_dict: Dict[Any, Any]) -> 'Keystore':
+        js_validate(instance=json_dict, schema=KEYSTORE_JSON_SCHEMA)
         crypto = KeystoreCrypto.from_json(json_dict['crypto'])
         path = json_dict['path']
         uuid = json_dict['uuid']
